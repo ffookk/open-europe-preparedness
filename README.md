@@ -19,7 +19,7 @@ python3 scripts/validate_records.py data/verified.json data/pending.json example
 python3 -m unittest discover -s tests -v
 ```
 
-校验 CLI 接受一个或多个 JSON 文件，并在所有输入间检查重复 ID。返回 `0` 表示结构检查通过；`1` 表示数据或文件错误。**通过检查不代表政策事实已经核实。** 真实核查仍需阅读原始资料、定位证据，并经过人工 PR 审阅。
+校验 CLI 接受一个或多个 JSON 文件，并在所有输入间检查重复 ID。运行 `python3 scripts/validate_records.py --help` 可查看参数说明。退出码 `0` 表示命令成功（显示帮助或结构检查通过），`1` 表示数据或文件错误，`2` 表示命令行参数错误。**通过检查不代表政策事实已经核实。** 真实核查仍需阅读原始资料、定位证据，并经过人工 PR 审阅。
 
 | 内容 | 位置 |
 |---|---|
