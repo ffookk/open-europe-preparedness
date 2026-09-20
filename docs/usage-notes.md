@@ -1,16 +1,16 @@
-# 校验 CLI 使用细节
+# Validation CLI usage notes
 
-CLI 只读取输入文件并输出校验结果，不会重写 JSON 或自动修正记录。
+The CLI only reads input files and reports validation results. It does not rewrite JSON or automatically correct records.
 
-## 输入与诊断
+## Inputs and diagnostics
 
-- 至少提供一个 JSON 文件；不传文件会返回命令行用法错误。
-- `-` 不表示标准输入；请把待检查的 JSON 保存为文件后传入路径。
-- 目录不会递归展开为 JSON 文件；请显式列出需要共同检查的文件。
-- 同一个文件不要重复传入；第二次读取其中的 ID 也会触发跨输入重复检查。
-- 一个输入读取失败后，CLI 仍尝试检查后续输入；任一错误都会使整次命令失败。
-- 成功摘要写入标准输出，数据诊断写入标准错误；收集失败详情时不要只保存标准输出。
-- `input-2.records[0]` 指第二个命令行输入的第一条记录；输入序号从 1 开始，数组下标从 0 开始。
-- JSON 语法错误会附行号和列号；重复键、编码或文件读取错误使用不包含原值的通用提示。
-- 访问日和核查日的“未来”判断以运行机器的当前 UTC 日期为准；跨时区填写日期时需注意这一边界。
-- `PASS` 摘要中的记录数包含所有输入的真实、待核查与合成记录，不能当作已核实政策数量。
+- Provide at least one JSON file; omitting files produces a command-line usage error.
+- `-` does not mean standard input. Save the JSON to a file and pass its path.
+- Directories are not recursively expanded into JSON files. Explicitly list every file to validate together.
+- Do not pass the same file twice. IDs encountered on the second read also trigger duplicate detection across inputs.
+- If one input cannot be read, the CLI still attempts to check later inputs. Any error makes the overall command fail.
+- Success summaries go to standard output; data diagnostics go to standard error. Capture more than standard output when collecting failure details.
+- `input-2.records[0]` means the first record in the second command-line input. Input numbers start at 1; array indexes start at 0.
+- JSON syntax errors include line and column numbers. Duplicate keys, encoding failures and file-read errors use generic messages that omit raw values.
+- Whether an access or review date is in the future is determined using the machine's current UTC date. Keep that boundary in mind when entering dates across time zones.
+- The record count in a `PASS` summary includes real, pending and synthetic records from every input. It is not a count of verified policies.
