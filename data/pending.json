@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "fi-reservist-age-lead",
+      "record_type": "real",
+      "jurisdiction": "FI",
+      "topic": "reserve_service",
+      "title": "芬兰预备役年龄：待核查线索",
+      "claim": "待核查问题：来源中的年龄调整适用哪些人群，法律依据与生效日期是什么？人数目标须另建记录。",
+      "scope": "芬兰；具体适用人群待核查",
+      "policy_stage": "unknown",
+      "verification_status": "pending",
+      "dates": {
+        "announced_at": null,
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://valtioneuvosto.fi/en/-/236553176/finland-to-raise-reservist-age-limit-to-65-years-as-of-2026",
+          "publisher": "芬兰政府",
+          "title": "README 中的预备役年龄来源线索",
+          "published_at": null,
+          "locator": null,
+          "accessed_at": null,
+          "supports": null
+        }
+      ],
+      "last_verified_at": null,
+      "verification_note": "仅从仓库原有 README 转录研究线索；未访问来源、核验时效或确认任何政策事实。",
+      "limitations": [
+        "来源链接、机构归属、具体文件版本和证据位置仍需人工复核。",
+        "不能将此待核查问题引用为已确认的政策结论。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
+        }
+      ]
+    },
+    {
+      "id": "un-mine-ban-withdrawal-lead",
+      "record_type": "real",
+      "jurisdiction": "Europe / UN treaty depositary",
+      "topic": "treaty_status",
+      "title": "杀伤人员地雷条约退出：待拆分的来源线索",
+      "claim": "待核查问题：条约登记中哪些国家有退出通知，其通知日与生效日分别是什么？完成核查时须按国家拆分。",
+      "scope": "条约登记索引；不代表任何具体国家已退出",
+      "policy_stage": "unknown",
+      "verification_status": "pending",
+      "dates": {
+        "announced_at": null,
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://treaties.un.org/Pages/ViewDetails.aspx?chapter=26&clang=_en&mtdsg_no=XXVI-5&src=TREATY",
+          "publisher": "联合国条约登记",
+          "title": "README 中的联合国条约来源线索",
+          "published_at": null,
+          "locator": null,
+          "accessed_at": null,
+          "supports": null
+        }
+      ],
+      "last_verified_at": null,
+      "verification_note": "仅从仓库原有 README 转录研究线索；未访问来源、核验时效或确认任何政策事实。",
+      "limitations": [
+        "来源链接、机构归属、具体文件版本和证据位置仍需人工复核。",
+        "不能将此待核查问题引用为已确认的政策结论。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
+        }
+      ]
+    },
+    {
+      "id": "eu-household-preparedness-lead",
+      "record_type": "real",
+      "jurisdiction": "EU",
+      "topic": "household_preparedness",
+      "title": "欧盟家庭应急准备：待核查线索",
+      "claim": "待核查问题：欧盟原始文件提出了什么家庭准备建议，其适用范围及法律性质是什么？",
+      "scope": "欧盟；成员国具体要求须单独核查",
+      "policy_stage": "unknown",
+      "verification_status": "pending",
+      "dates": {
+        "announced_at": null,
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://commission.europa.eu/topics/preparedness_en",
+          "publisher": "欧盟委员会",
+          "title": "README 中的 Preparedness 来源线索",
+          "published_at": null,
+          "locator": null,
+          "accessed_at": null,
+          "supports": null
+        }
+      ],
+      "last_verified_at": null,
+      "verification_note": "仅从仓库原有 README 转录研究线索；未访问来源、核验时效或确认任何政策事实。",
+      "limitations": [
+        "来源链接、机构归属、具体文件版本和证据位置仍需人工复核。",
+        "不能将此待核查问题引用为已确认的政策结论。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "synthetic-example-proposal",
+      "record_type": "synthetic",
+      "jurisdiction": "EXAMPLE — fictional jurisdiction",
+      "topic": "household_preparedness",
+      "title": "[SYNTHETIC] Fictional preparedness proposal",
+      "claim": "[SYNTHETIC] A fictional authority proposed distributing preparedness leaflets. This is not a real policy.",
+      "scope": "Fictional jurisdiction only; demonstrates a verified proposal, not an enacted policy.",
+      "policy_stage": "proposed",
+      "verification_status": "verified",
+      "dates": {
+        "announced_at": "2024-01-02",
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": "2025-01-01"
+      },
+      "sources": [
+        {
+          "url": "https://example.invalid/fictional-proposal",
+          "publisher": "Fictional Example Authority",
+          "title": "[SYNTHETIC] Demonstration source",
+          "published_at": "2024-01-02",
+          "locator": "Fictional section 2, paragraph 1",
+          "accessed_at": "2024-01-03",
+          "supports": "[SYNTHETIC] The fictional passage describes a proposal only; it does not establish adoption or implementation."
+        }
+      ],
+      "last_verified_at": "2024-01-03",
+      "verification_note": "[SYNTHETIC] Dates and evidence fields are invented to demonstrate a complete reviewed record. No website was accessed or factual verification performed.",
+      "limitations": [
+        "Synthetic fixture only; never include in counts of real policies or verified research.",
+        "The example.invalid URL intentionally has no real evidence document."
+      ],
+      "change_history": [
+        {
+          "date": "2024-01-03",
+          "summary": "[SYNTHETIC] Fictional review entry for demonstrating the record format."
+        }
+      ]
+    }
+  ]
+}
