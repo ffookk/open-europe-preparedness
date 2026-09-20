@@ -30,6 +30,7 @@ python3 -m unittest discover -s tests -v
 | 2 条待核查研究线索 | [`data/pending.json`](data/pending.json) |
 | 1 条完全虚构的完整示例 | [`examples/synthetic.json`](examples/synthetic.json) |
 | 标准库校验命令 | [`scripts/validate_records.py`](scripts/validate_records.py) |
+| CLI 使用细节 | [CLI 使用细节](docs/usage-notes.md) |
 
 ## 项目目标
 
