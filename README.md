@@ -1,79 +1,79 @@
 # Open Europe Preparedness
 
-欧洲安全与民防准备开放数据库项目。
+An open database project about European security and civil preparedness.
 
-本项目计划整理欧洲各国与欧盟公开的国防、民防和应急准备政策，帮助读者区分网络主张、原始证据、法律状态、实施进度和长期目标，并建立可以通过 Pull Request 持续纠错的协作流程。
+This project aims to organize public defence, civil protection and emergency preparedness policies from European countries and the EU. It helps readers distinguish online claims, original evidence, legal status, implementation progress and long-term targets, with a contribution process for continuing corrections through pull requests.
 
-## 当前状态
+## Current status
 
-已实现第一版政策记录 JSON Schema、[字段与证据审阅规范](docs/record-format.md)、Python 标准库校验 CLI 及回归测试。政策阶段与核查结果分别保存，检查日期、跨文件唯一 ID、来源定位以及已核查记录的必需字段。
+The first policy-record JSON Schema, [field and evidence review rules](docs/record-format.md), Python standard-library validation CLI and regression tests are implemented. Policy stages and verification results are stored separately. Checks cover dates, unique IDs across files, evidence locators and required fields for reviewed records.
 
-**当前有 3 条经 AI 代理原始来源复核的真实记录、2 条待核查来源线索，以及 1 条 synthetic 虚构格式示例。** 本轮于2026年9月20日读取欧盟官方原文，分别记录非立法战略的通过、72小时自给指引的制定计划，以及 rescEU 能源储备已有部署的官方陈述。`verified` 表示来源支持精确主张，**这3条尚未完成人工审阅，不构成人工认证**；[来源复核记录](docs/source-review.md)列明方法、证据位置和边界。网站和查询工具尚未实现。合成示例的 `verified` 状态仅演示字段完整性。
+**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. A website and query tools are not yet implemented. The synthetic example uses `verified` only to demonstrate complete fields.
 
-## 本地运行
+## Run locally
 
-需要 Python 3.10 或更高版本，无需安装第三方依赖。以下命令在仓库根目录运行，且不联网：
+Python 3.10 or later is required, with no third-party dependencies. Run these commands from the repository root; they do not access the network:
 
 ```sh
 python3 scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json
 python3 -m unittest discover -s tests -v
 ```
 
-校验 CLI 接受一个或多个 JSON 文件，并在所有输入间检查重复 ID。运行 `python3 scripts/validate_records.py --help` 可查看参数说明。退出码 `0` 表示命令成功（显示帮助或结构检查通过），`1` 表示数据或文件错误，`2` 表示命令行参数错误。**通过检查不代表政策事实已经核实。** 真实核查仍需阅读原始资料、定位证据，并经过人工 PR 审阅。
+The CLI accepts one or more JSON files and checks for duplicate IDs across all inputs. Run `python3 scripts/validate_records.py --help` for argument help. Exit code `0` means success (help displayed or structural checks passed), `1` means a data or file error, and `2` means a command-line argument error. **Passing checks does not establish that policy facts are verified.** Factual verification still requires reading original sources, locating evidence and obtaining human PR review.
 
-| 内容 | 位置 |
+| Content | Location |
 |---|---|
-| 机器可读数据结构 | [`schema/policy-records.schema.json`](schema/policy-records.schema.json) |
-| 字段、状态和证据审阅规则 | [`docs/record-format.md`](docs/record-format.md) |
-| 3 条经代理来源复核的真实记录 | [`data/verified.json`](data/verified.json) |
-| 来源位置、方法与核查边界 | [`docs/source-review.md`](docs/source-review.md) |
-| 2 条待核查研究线索 | [`data/pending.json`](data/pending.json) |
-| 1 条完全虚构的完整示例 | [`examples/synthetic.json`](examples/synthetic.json) |
-| 标准库校验命令 | [`scripts/validate_records.py`](scripts/validate_records.py) |
-| CLI 使用细节 | [CLI 使用细节](docs/usage-notes.md) |
+| Machine-readable data structure | [`schema/policy-records.schema.json`](schema/policy-records.schema.json) |
+| Field, status and evidence review rules | [`docs/record-format.md`](docs/record-format.md) |
+| 3 real records with agent source review | [`data/verified.json`](data/verified.json) |
+| Evidence locations, method and review limits | [`docs/source-review.md`](docs/source-review.md) |
+| 2 pending research leads | [`data/pending.json`](data/pending.json) |
+| 1 entirely fictional complete example | [`examples/synthetic.json`](examples/synthetic.json) |
+| Standard-library validation command | [`scripts/validate_records.py`](scripts/validate_records.py) |
+| CLI usage details | [CLI usage notes](docs/usage-notes.md) |
 
-## 项目目标
+## Project goals
 
-- 为可独立核查的政策主张建立结构化记录。
-- 分开记录提议、通过、生效、实施中和目标完成等政策阶段。
-- 整理官方民防指南索引与注明出处的中文摘要。
-- 支持资料补充、状态更新、事实纠错、翻译和代码贡献。
+- Create structured records for independently verifiable policy claims.
+- Record proposals, adoption, entry into force, implementation and completion separately.
+- Build an index of official civil protection guides with attributed English summaries.
+- Support source additions, status updates, factual corrections, translations into English and code contributions.
 
-初期关注预备役与征兵制度、国际条约状态、公开防御与庇护设施政策，以及家庭应急准备建议。记录应明确适用国家、人群、时间和统计口径。
+Initial topics include reserve and conscription systems, international treaty status, public defence and shelter policies, and household preparedness advice. Records should identify the relevant country, population, period and measurement definitions.
 
-## 核查原则
+## Verification principles
 
-一条记录只回答一个可以独立核查的问题。例如，预备役年龄上限调整与未来预备役人数目标应分别记录。
+Each record should address one independently verifiable question. For example, a change to the reservist age limit and a future target for the number of reservists belong in separate records.
 
-**政策阶段和核查结论必须分开。** 一个提案可以被确认确实存在，但仍未通过或生效；人数目标也不等于当前规模。宣布、通过、生效和目标日期不能互相替代。
+**Policy stage and verification result must remain separate.** A proposal can be verified as existing while still awaiting adoption or entry into force; a population target is not a current count. Announcement, adoption, effective and target dates are not interchangeable.
 
-优先使用政府、议会、法律数据库、国际组织和官方指南。每条记录应提供来源链接、发布机构、发布日期及相关条款、段落或页码，并说明证据支持的具体内容和限制。
+Prefer governments, parliaments, legal databases, international organizations and official guides. Each record should provide source links, publishers, publication dates and relevant provisions, paragraphs or pages, explaining exactly what the evidence supports and its limits.
 
-尚未审阅来源的线索应标为待核查，最后核查日期留空。链接失效或无法访问只表示需要复查，不能据此判定政策虚假。自动检查仅验证数据结构与一致性；事实判断仍需人工审阅证据。
+Unreviewed leads should remain pending with no last-review date. An inaccessible or broken link signals a need for follow-up; it does not establish that a policy is false. Automated checks validate only structure and consistency. Factual judgments still require human evidence review.
 
-## 初期工作与验收标准
+## Initial work and acceptance criteria
 
-1. **定义数据格式与状态规则。** 建立 schema、字段说明和格式示例，明确未知日期、待核查线索、政策阶段与核查结论的表示方式。
-2. **完成首批政策核查。** 将芬兰预备役年龄与规模目标拆开，分别整理有关国家退出《渥太华公约》的时间线，并核对欧盟家庭应急准备建议。
-3. **建立贡献与验证流程。** 添加记录检查程序和 CI，检查必填字段、日期及重复编号，并保留人工证据审阅步骤。
-4. **整理指南索引。** 提供官方原文链接、语言和版本信息，摘要清楚标注来源与适用范围。
+1. **Define the data format and status rules.** Provide the schema, field documentation and format examples, including representations for unknown dates, pending leads, policy stages and verification results.
+2. **Review the first policy records.** Separate Finland's reservist-age question from its population target, build country-specific Ottawa Convention withdrawal timelines and check EU household preparedness advice.
+3. **Establish contribution and validation workflows.** Add record checks and CI for required fields, dates and duplicate IDs while retaining human evidence review.
+4. **Build a guide index.** Include official source links, language and version information, with clearly attributed summaries and scope.
 
-第一阶段验收标准：收录 **10 条可独立核查的政策记录**，每条具备来源、政策阶段、核查结论、关键日期、适用范围和最后核查日期；一位首次参与者能够依照贡献说明完成一次纠错 PR。
+Phase-one acceptance requires **10 independently verifiable policy records**, each with sources, policy stage, verification result, key dates, scope and last-review date. A first-time contributor should be able to follow the contribution guide to submit a correction PR. These records must meet the human-review requirement in the [roadmap](ROADMAP.md).
 
-## 官方来源索引与剩余线索
+## Official source index and remaining leads
 
-欧盟 Preparedness 与 rescEU 已完成下述有限范围的代理来源复核，具体记录见上表；其余链接仍是筹备期线索，未验证可访问性或政策事实。
+EU Preparedness and rescEU have received the limited agent source review described below; see the records linked above. Other links remain early research leads whose accessibility and policy claims have not been verified.
 
-| 研究方向 | 来源线索 | 后续核查重点 |
+| Research area | Source lead | Follow-up focus |
 |---|---|---|
-| 芬兰预备役制度 | [芬兰政府：预备役年龄上限](https://valtioneuvosto.fi/en/-/236553176/finland-to-raise-reservist-age-limit-to-65-years-as-of-2026) | 法律依据、适用人群、生效日期与人数目标口径 |
-| 杀伤人员地雷条约 | [联合国条约登记](https://treaties.un.org/Pages/ViewDetails.aspx?chapter=26&clang=_en&mtdsg_no=XXVI-5&src=TREATY) | 逐国核对通知日期、生效日期和声明 |
-| 欧盟应急准备 | [欧盟委员会：Preparedness](https://commission.europa.eu/topics/preparedness_en) | 已复核战略通过与72小时指引计划；后续指引发布和各国要求待查 |
-| 欧盟应急储备 | [欧盟委员会：rescEU](https://civil-protection-humanitarian-aid.ec.europa.eu/what/civil-protection/resceu_en) | 已复核能源储备部署陈述；其他能力与数量待查 |
-| 瑞典民防指南 | [官方手册 PDF](https://rib.msb.se/filer/pdf/30874.pdf) | 版本、发布日期及摘要对应页码 |
+| Finland's reserve system | [Finnish Government: reservist age limit](https://valtioneuvosto.fi/en/-/236553176/finland-to-raise-reservist-age-limit-to-65-years-as-of-2026) | Legal basis, affected population, effective date and definition of population targets |
+| Anti-personnel mine treaty | [UN Treaty Collection](https://treaties.un.org/Pages/ViewDetails.aspx?chapter=26&clang=_en&mtdsg_no=XXVI-5&src=TREATY) | Country-specific notification dates, effective dates and declarations |
+| EU preparedness | [European Commission: Preparedness](https://commission.europa.eu/topics/preparedness_en) | Strategy adoption and the 72-hour guideline plan reviewed; later guideline publication and national requirements remain pending |
+| EU emergency reserves | [European Commission: rescEU](https://civil-protection-humanitarian-aid.ec.europa.eu/what/civil-protection/resceu_en) | Energy-reserve deployment statement reviewed; other capabilities and counts remain pending |
+| Swedish civil protection guide | [Official handbook PDF](https://rib.msb.se/filer/pdf/30874.pdf) | Version, publication date and pages supporting summaries |
 
-## 参与方式
+## Contribute
 
-阅读 [贡献说明](CONTRIBUTING.md) 和 [路线图](ROADMAP.md)，再提出资料线索或聚焦单一问题的修改。PR 应说明改了什么、依据是什么、尚有哪些不确定性。没有编程经验也可以贡献来源、纠错和翻译。
+Read the [contribution guide](CONTRIBUTING.md) and [roadmap](ROADMAP.md), then propose a source lead or a change focused on one question. PRs should explain the change, its evidence and remaining uncertainty. Contributors can add sources, correct errors and translate source material into English without programming experience.
 
-第三方网页、出版物和原文继续适用各自的版权及使用条件；收录外链不代表重新授权。项目原创内容的许可安排须以仓库实际提供的许可证为准。
+Third-party websites, publications and original documents remain subject to their own copyright and terms. Linking to them does not grant a new licence. Licensing for original project content is governed by the licence actually provided in this repository.

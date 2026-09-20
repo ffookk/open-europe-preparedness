@@ -1,33 +1,33 @@
-# 路线图
+# Roadmap
 
-第一版格式与本地检查工具已实现；首批 **3 条真实记录已完成 AI 代理官方来源复核，人工审阅完成数为 0 条**。当前另有2条待核查线索和1条 synthetic 示例。代理复核记录须经独立人工审阅后，才计入第一阶段10条人工审阅记录目标；索引展示仍待完成。
+The first data format and local validation tools are implemented. The first **3 real records have received AI agent review against official sources; 0 have completed human review**. There are also 2 pending leads and 1 synthetic example. Agent-reviewed records require independent human review before counting toward the phase-one target of 10 human-reviewed records. The index remains unimplemented.
 
-## PR 1：政策记录格式与核查规范
+## PR 1: Policy-record format and review rules
 
-- [x] 定义国家/地区、政策标题、原始来源、发布日期和最近核验日期。
-- [x] 区分宣布、提案、正式通过、法律生效和实际执行阶段，并独立保存核查结果。
-- [x] 记录准确表述、适用范围、更新历史和证据不足之处。
-- [x] 提供 JSON Schema、字段说明及明确标记为虚构的完整格式示例。
+- [x] Define country or jurisdiction, policy title, original sources, publication date and last-review date.
+- [x] Distinguish announcement, proposal, adoption, entry into force and implementation, storing verification results independently.
+- [x] Record precise claims, scope, change history and evidence gaps.
+- [x] Provide JSON Schema, field documentation and a complete example clearly marked as fictional.
 
-验收：格式可表达政策的实际阶段；真实记录的阶段判断仍须审阅证据，不能把准备措施直接解释为战争时间预测。
+Acceptance: the format can express actual policy stages. Assigning stages to real records still requires evidence review; preparedness measures must not be treated as predictions of when war will occur.
 
-## PR 2：首批可追溯记录
+## PR 2: First traceable records
 
-- [x] 从既有 README 提取 3 条来源线索，全部使用 pending、unknown 和空核查日期。
-- [x] 从欧盟官方原文建立3条独立记录，完成代理来源复核并公开审阅方法。
-- [ ] 对这3条记录完成独立人工审阅，再扩充至10条。
-- [x] 首批记录区分欧盟非立法战略、后续指引制定计划和项目实际部署，不推定成员国法律义务。
-- [ ] 将条约登记线索按国家拆分，将预备役年龄调整与人数目标分别核查。
-- [x] 首批记录保存证据位置及更正记录，未核查线索保持 pending。
-- [ ] 补查72小时指引后续发布情况，按原文更新而非从目标年份推断完成。
+- [x] Extract 3 source leads from the earlier README, all using pending status, unknown policy stage and empty review dates.
+- [x] Create 3 independent records from original EU sources, complete agent source review and document the method.
+- [ ] Obtain independent human review of these 3 records, then expand to 10.
+- [x] Distinguish an EU non-legislative strategy, a plan to develop subsequent guidelines and actual programme deployments, without inferring member-state legal obligations.
+- [ ] Split treaty-registry leads by country, and review reservist-age changes separately from population targets.
+- [x] Retain evidence locations and correction history for the first records; keep unreviewed leads pending.
+- [ ] Check subsequent publication of the 72-hour guidelines and update from original evidence rather than inferring completion from a target year.
 
-验收：累计 10 条经过人工审阅、可独立核查的真实政策记录，每条都有支持具体陈述的来源、日期和复核说明；不能用 AI 旧回答或 synthetic 示例代替证据。
+Acceptance: 10 real policy records have been reviewed by humans and can be checked independently. Each has sources supporting its specific claim, dates and review notes. Previous AI answers and synthetic examples cannot substitute for evidence.
 
-## PR 3：可重复的数据检查与展示
+## PR 3: Reproducible data checks and presentation
 
-- [x] 以 Python 标准库校验必填字段、跨文件重复 ID、真实日历日期、来源定位和核查日期一致性。
-- [x] 回归测试覆盖已核验提案、待核查线索、缺失证据、错误日期、混用合成来源和 CLI 输入错误。
-- [ ] 输出可筛选的国家、主题和政策状态索引。
-- [ ] 在数据与核查流程稳定后，再考虑网站或其他工具。
+- [x] Use the Python standard library to check required fields, duplicate IDs across files, real calendar dates, evidence locations and consistency of review dates.
+- [x] Cover reviewed proposals, pending leads, missing evidence, invalid dates, synthetic-source misuse and CLI input errors with regression tests.
+- [ ] Produce an index filterable by country, topic and policy status.
+- [ ] Consider a website or other tools once the data and review process are stable.
 
-验收：他人可以用 README 命令检查相同数据；索引功能完成后还应能够重建相同索引，查看每项结论的来源与适用时间。自动检查通过仅代表结构规则成立。
+Acceptance: others can validate the same data using the README commands. Once implemented, the index should also be reproducible and show each conclusion's evidence and applicable period. Passing automated checks establishes only compliance with structural rules.

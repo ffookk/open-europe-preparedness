@@ -1,94 +1,94 @@
-# 政策记录 v1：字段和证据审阅规则
+# Policy records v1: Fields and evidence review rules
 
-机器可读结构见 [`schema/policy-records.schema.json`](../schema/policy-records.schema.json)。标准库 CLI 是本仓库提交检查的执行入口：它额外检查真实日历日期、跨文件 ID 唯一性、来源网址、最后核查日期与来源访问日期的关系。JSON Schema 校验器通常需要另行启用 `format` 检查，也不能代替跨文件或事实审查。
+The machine-readable structure is in [`schema/policy-records.schema.json`](../schema/policy-records.schema.json). The standard-library CLI is the repository's validation entry point. It additionally checks real calendar dates, unique IDs across files, source URLs and the relationship between review and source-access dates. JSON Schema validators generally need `format` checking enabled separately and cannot replace cross-file or factual review.
 
-每个 JSON 文件顶层仅包含 `schema_version: 1` 和非空的 `records` 数组。记录不接受额外字段。UTF-8 JSON 不允许重复键或 NaN/Infinity。`null` 表示未知或尚未发生；禁止用空字符串、零日期或猜测日期占位。
+Each JSON file has only `schema_version: 1` and a nonempty `records` array at the top level. Records reject extra fields. UTF-8 JSON must not contain duplicate keys or NaN/Infinity. `null` means unknown or not yet occurred; do not substitute empty strings, zero dates or guessed dates.
 
-`schema_version` 必须写成整数 `1`；字符串 `"1"`、浮点数 `1.0` 和布尔值 `true` 均不被 CLI 接受。
-允许 `null` 的字段仍必须保留键名；“值未知”和“缺少字段”是两种不同情况。 JSON 空值写作不带引号的 `null`；字符串 `"null"` 不属于有效日期或空值。
-枚举值区分大小写；例如使用 `verified`，不能写成 `Verified` 或中文标签。
+`schema_version` must be the integer `1`. The CLI rejects the string `"1"`, the float `1.0` and the Boolean `true`.
+Fields that allow `null` must still retain their keys. An unknown value and a missing field are different conditions. JSON null is written as unquoted `null`; the string `"null"` is neither a valid date nor a null value.
+Enum values are case-sensitive. For example, use `verified`, not `Verified` or a translated label.
 
-政策日期或发布日期只知道年份或月份时，保留 `null`，并在说明中保留已知精度；不要补成该年或该月的第一天。
+When only a year or month is known for a policy or publication date, retain `null` and describe the known precision in a note. Do not invent the first day of that year or month.
 
-`id` 以 ASCII 小写字母开头，后续只含小写字母、数字和分隔用的单个连字符；不使用下划线、空格、结尾连字符或连续连字符。
+An `id` starts with a lowercase ASCII letter and contains only lowercase letters, digits and single separating hyphens. Underscores, spaces, trailing hyphens and consecutive hyphens are not allowed.
 
-| 字段 | 含义与规则 |
+| Field | Meaning and rules |
 |---|---|
-| `id` | 全部输入文件中唯一的英文小写 slug。合成记录使用 `synthetic-` 前缀，真实研究记录禁止使用该前缀。 |
-| `record_type` | `real` 是关于现实政策的研究记录，可能仍待核查；`synthetic` 是完全虚构的格式示例。 |
-| `jurisdiction` | 国家、欧盟或条约登记范围。避免把欧盟建议自动写成某成员国法律。 |
-| `topic` | `reserve_service`、`treaty_status`、`civil_protection`、`household_preparedness`、`emergency_stockpiles`、`other`。 |
-| `title` / `claim` | 标题及一个可独立核查的准确表述。待核查线索可写明确的研究问题；完整真实记录须聚焦单个主张。 |
-| `scope` | 适用人群、国家、时间或统计口径。不要加入个人姓名、家庭地址或账户信息。 |
-| `policy_stage` | 政策进程，见下表。 |
-| `verification_status` | 对当前主张的核查结果，见下表。 |
-| `dates` | 固定含 `announced_at`、`adopted_at`、`effective_at`、`target_at`；每项为 `YYYY-MM-DD` 或 `null`。目标日期可以在未来。 |
-| `sources` | 至少一个来源，字段见下一节。 |
-| `last_verified_at` | 最近一次证据审阅日期；`pending` 必须为 `null`，其他核查结果必须有有效日期且不得在未来。 |
-| `verification_note` | 当前核查方法、结论及边界。格式检查通过不能写成已人工核实。 |
-| `limitations` | 非空字符串数组，明确证据局限；不能用空白内容充数。 |
-| `change_history` | 至少一个 `{ "date": "YYYY-MM-DD", "summary": "…" }` 条目；记录结论更正和重要状态变化，不记录贡献者私人信息。 |
+| `id` | A lowercase English slug unique across all input files. Synthetic records use the `synthetic-` prefix; real research records must not use it. |
+| `record_type` | `real` is a research record about an actual policy, possibly still pending review; `synthetic` is an entirely fictional format example. |
+| `jurisdiction` | Country, EU or treaty-registry scope. Do not automatically turn an EU recommendation into member-state law. |
+| `topic` | `reserve_service`, `treaty_status`, `civil_protection`, `household_preparedness`, `emergency_stockpiles` or `other`. |
+| `title` / `claim` | A title and one precise, independently verifiable statement. Pending leads may state a specific research question; complete real records must focus on a single claim. |
+| `scope` | Applicable population, country, period or measurement definition. Do not include personal names, household addresses or account information. |
+| `policy_stage` | The policy's stage, described below. |
+| `verification_status` | The review result for the current claim, described below. |
+| `dates` | Always contains `announced_at`, `adopted_at`, `effective_at` and `target_at`, each as `YYYY-MM-DD` or `null`. Target dates may be in the future. |
+| `sources` | At least one source, using the fields in the next section. |
+| `last_verified_at` | Date of the latest evidence review. Must be `null` for `pending`; other verification results require a valid date that is not in the future. |
+| `verification_note` | Current review method, conclusion and limits. Passing format checks must not be described as human verification. |
+| `limitations` | A nonempty array of nonblank strings explaining evidence limits. |
+| `change_history` | At least one `{ "date": "YYYY-MM-DD", "summary": "..." }` entry. Record corrections and significant status changes, without contributors' private information. |
 
-`change_history` 的排列顺序不会由 CLI 校验或重排；编辑时应保留可读的更正时间线。
+The CLI neither validates nor changes the order of `change_history`. Preserve a readable correction timeline when editing it.
 
-## 两种状态彼此独立
+## The two statuses are independent
 
-| 政策阶段 | 含义 |
+| Policy stage | Meaning |
 |---|---|
-| `unknown` | 还没有足够证据确定阶段。 |
-| `announced` | 已宣布意向；不据此推定形成正式提案。 |
-| `proposed` | 已形成可确认的提案或草案。 |
-| `adopted` | 有关程序已正式通过；不自动等于生效。 |
-| `in_force` | 有明确依据证明已生效。 |
-| `implementing` | 有证据证明正在实际执行。 |
-| `completed` | 已证实完成记录所描述的具体事项。 |
-| `withdrawn` | 所记录的提案或措施已撤回。条约退出须依据具体主张描述，不能仅凭此标签代替法律生效时间线。 |
+| `unknown` | Evidence is insufficient to determine the stage. |
+| `announced` | An intention has been announced; this does not establish that a formal proposal exists. |
+| `proposed` | An identifiable proposal or draft exists. |
+| `adopted` | The relevant adoption process has been completed; this does not automatically mean entry into force. |
+| `in_force` | Clear evidence establishes that the measure has entered into force. |
+| `implementing` | Evidence shows actual implementation is underway. |
+| `completed` | Completion of the specific action described in the record has been established. |
+| `withdrawn` | The recorded proposal or measure has been withdrawn. Treaty withdrawal requires a precise claim and legal timeline; this label alone cannot replace them. |
 
-| 核查结果 | 含义 |
+| Verification result | Meaning |
 |---|---|
-| `pending` | 尚未完成证据审阅。 |
-| `verified` | 阅读原始证据后，判断其支持当前精确表述；审阅者类型和边界须在 verification_note 写明。 |
-| `disputed` | 已审阅证据与当前主张存在冲突，需要解释。 |
-| `outdated` | 已确认原记录或证据不再反映当前状态；说明适用时间。 |
-| `inconclusive` | 已尝试核查，但证据不足以确定结论。 |
+| `pending` | Evidence review has not been completed. |
+| `verified` | Review of original evidence supports the current precise statement. Record the reviewer type and limits in `verification_note`. |
+| `disputed` | Reviewed evidence conflicts with the current claim; explain the conflict. |
+| `outdated` | The record or evidence has been shown to no longer reflect the current position; specify the applicable period. |
+| `inconclusive` | Review was attempted, but the evidence does not support a definite conclusion. |
 
-例如，`proposed + verified` 表示“确实存在该提案”，不表示已经通过。`unknown + verified` 也可能用于确认某个事实、但尚无法把政策归入后续阶段。状态间不存在自动推进规则。
+For example, `proposed + verified` means that the proposal's existence is verified, not that it has been adopted. `unknown + verified` may also describe a verified fact whose policy cannot yet be assigned to a later stage. Statuses do not advance automatically.
 
-CLI 不比较宣布、通过、生效和目标日期的先后关系；时间线是否合理仍须按原始材料逐项审阅。
+The CLI does not compare announcement, adoption, effective and target dates chronologically. Review the timeline against original sources.
 
-`verified` 不表示政府背书、独立审计或人工认证。人工和 AI 代理的来源审阅均须明确记录审阅方式；代理审阅不得写成已人工确认。第一阶段的人工审阅验收门槛保留。
+`verified` does not mean government endorsement, independent audit or human certification. Both human and AI-agent source reviews must state their review method. Agent review must not be described as human confirmation. The phase-one human-review acceptance requirement remains in place.
 
-未阅读来源的全新线索使用 `policy_stage: "unknown"`、`verification_status: "pending"` 和 `last_verified_at: null`。这是编辑规则；CLI 不会自动从核查状态推导政策阶段。无法访问链接也不能自动判为 `disputed` 或把某项政策判为虚假。
+New leads whose sources have not been read use `policy_stage: "unknown"`, `verification_status: "pending"` and `last_verified_at: null`. This is an editorial rule; the CLI does not infer policy stage from verification status. An inaccessible link does not automatically justify `disputed` or establish that a policy is false.
 
-## 来源字段
+## Source fields
 
-每项来源固定包含以下字段：
+Every source has these fields:
 
-- `url`：HTTPS 原始来源链接，无用户信息、密码、明显凭据查询字段、空白或非标准端口；禁止 localhost、本地域名和 IP 地址字面量。域名末尾的 DNS 点会先移除再检查，不能据此绕过本地地址、IP 或保留域名限制。官方来源的普通查询参数可以保留。优先公开政府、议会、法律数据库和国际组织页面；人工检查并清除私人分享码、令牌、登录链接和跟踪参数，CLI 不具备完整隐私识别能力。
-- `publisher` / `title`：发布机构和文档标题；未审阅线索必须明确标题仅是线索标签。
-- `published_at`：原文发布日期；未知时为 `null`，不要用访问日代替。
-  CLI 不检查发布日期与访问日的先后关系；发现异常时应核对网页版本和日期含义。
-- `locator`：条文号、页码、章节或可稳定定位的段落；未找到时为 `null`。
-- `accessed_at`：实际访问日期；未访问时为 `null`。不得写未来日期，也不得晚于该记录的最后核查日期。
-- `supports`：用自己的话概述该位置具体支持什么，以及不能推出什么；未阅读时为 `null`。避免复制整段受版权保护内容。
+- `url`: An original HTTPS source link without user information, passwords, obvious credential query fields, whitespace or nonstandard ports. Localhost, local domains and IP address literals are prohibited. A trailing DNS dot is removed before checking, so it cannot bypass local-address, IP or reserved-domain restrictions. Ordinary query parameters on official sources may remain. Prefer public government, parliamentary, legal-database and international-organization pages. Manually remove private share codes, tokens, login links and tracking parameters; the CLI cannot recognize all private information.
+- `publisher` / `title`: Publishing organization and document title. An unreviewed lead must clearly identify its title as a lead label.
+- `published_at`: Original publication date, or `null` if unknown. Do not substitute the access date.
+  The CLI does not compare publication and access dates chronologically. Investigate page versions and date meanings when they appear inconsistent.
+- `locator`: Provision number, page, section or a stable paragraph location; `null` if not found.
+- `accessed_at`: Actual access date, or `null` if not visited. It must not be in the future or later than the record's last-review date.
+- `supports`: An original summary of exactly what the cited location supports and what it does not establish; `null` if unread. Avoid copying entire copyrighted passages.
 
-标为 `verified` 时，每个来源的 `locator`、`accessed_at`、`supports` 都必须完整；未审阅的延伸阅读线索应留在独立 `pending` 记录。其他核查结果可保留缺失的来源定位，以便表达无法核实的实际情况，但必须给出审查日期和说明。
+For `verified` records, every source must have complete `locator`, `accessed_at` and `supports` fields. Unreviewed further-reading leads belong in separate `pending` records. Other verification results may retain missing evidence locations to describe genuine verification difficulties, but still require a review date and explanation.
 
-来源 URL 校验不是官方机构白名单；HTTPS 语法和域名规则通过后，仍须人工判断发布机构与证据质量。
-同一来源 URL 的重复项不会被 CLI 去重或拒绝；审阅时应去除重复引用，避免把它们算作多份独立证据。
+URL validation is not an allowlist of official institutions. Passing HTTPS syntax and domain checks does not establish publisher credibility or evidence quality.
+The CLI does not deduplicate or reject repeated source URLs. Remove duplicate citations during review rather than counting them as independent evidence.
 
-## 合成示例、真实数据和运行检查
+## Synthetic examples, real data and checks
 
-`examples/synthetic.json` 只有 1 条虚构示例。它用 `verified` 演示完整字段，所写访问日、核查日、机构和支持内容均为虚构。来源仅允许 `example.org` 或 `example.invalid`，不计入真实记录或已核验政策数量。`data/verified.json` 有3条完成代理来源复核的真实记录，方法和范围见 [来源复核记录](source-review.md)。`data/pending.json` 保留2条来自既有 README 的待核查线索，其中条约索引仍需逐国拆分。待核查线索、合成示例和未经人工审阅的记录均不计入第一阶段10条人工审阅政策记录目标。
+`examples/synthetic.json` contains 1 fictional example. It uses `verified` to demonstrate complete fields; its access date, review date, organization and supporting statements are invented. Sources may use only `example.org` or `example.invalid`. It does not count toward real records or verified policies. `data/verified.json` contains 3 real records with agent source review; see the [source review log](source-review.md) for method and scope. `data/pending.json` retains 2 research leads from the earlier README, including a treaty index that still needs country-specific records. Pending leads, synthetic examples and records without human review do not count toward the phase-one target of 10 human-reviewed policy records.
 
-合成来源规范化后的域名须精确匹配允许列表，`sub.example.org` 等子域名不在允许列表中。
-真实记录的来源也不能使用 `example.com`、`example.net`、`example.org` 及其子域名，或以 `.example`、`.invalid` 结尾的域名。
+Normalized synthetic-source hostnames must exactly match the allowlist. Subdomains such as `sub.example.org` are not allowed.
+Real-record sources must not use `example.com`, `example.net`, `example.org`, their subdomains or domains ending in `.example` or `.invalid`.
 
 ```sh
 python3 scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json
 python3 -m unittest discover -s tests -v
 ```
 
-需要 Python 3.10 或更高版本，仅用标准库；不联网、不安装依赖，也不抓取来源页面。退出码 `0` 为结构检查通过，`1` 为文件或记录错误，`2` 为命令用法错误。校验结果仅使用 `input-1`、`input-2` 等输入序号、字段位置和规则，不输出路径、文件名或原始字段值。
+Python 3.10 or later is required. Only the standard library is used; the CLI does not access the network, install dependencies or fetch sources. Exit code `0` means structural checks passed, `1` means a file or record error, and `2` means a command usage error. Diagnostics use input numbers such as `input-1` and `input-2`, field locations and rules, without printing paths, filenames or raw field values.
 
-完成真实核查时，先阅读原始证据并保留稳定位置，再写精确主张、适用范围、各项日期、限制及更正记录，最后运行校验并提交 PR 供人工复核。一个完整且通过校验的 JSON 文件仍然可能包含错误事实；机器检查不能取代人工判断。
+For factual verification, read original evidence and retain stable locations, then write precise claims, scope, dates, limitations and correction history. Run validation and submit a PR for human review. A complete JSON file that passes validation can still contain incorrect facts; machine checks cannot replace human judgment.

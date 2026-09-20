@@ -1,20 +1,20 @@
-## 解决的问题
+## Problem addressed
 
-说明具体问题，以及本次改动带来的结果。
+Describe the concrete problem and the resulting behavior.
 
-## 改动与来源
+## Changes and sources
 
-列出核心改动；涉及事实或数据时附原始来源、证据位置和核验日期。
+List the main changes. For facts or data, include original sources, evidence locations and review dates.
 
-## 验证
+## Validation
 
-说明如何验证、实际观察到什么；未验证的部分请明确写出。
+Explain how the change was checked and what was observed. Clearly identify anything not verified.
 
-## 局限与后续
+## Limitations and follow-up
 
-列出适用范围、仍待核实的事项和后续独立工作。
+Describe the scope, remaining uncertainty and separate follow-up work.
 
-- [ ] 已区分已验证结果与待完成计划。
-- [ ] 涉及政策记录时，已分别核对 `policy_stage` 与 `verification_status`；未知日期保留 `null`，未以猜测补齐。
-- [ ] 未提交密钥、凭据或私密个人数据。
-- [ ] 外部内容的来源与使用条件已检查，或已明确标记为待核验线索且未复制其内容。
+- [ ] Verified results are distinguished from unfinished plans.
+- [ ] For policy records, `policy_stage` and `verification_status` were checked separately; unknown dates remain `null` rather than being guessed.
+- [ ] No secrets, credentials or private personal data are included.
+- [ ] External sources and usage conditions were checked, or the item is clearly marked as an unverified lead without copying its content.

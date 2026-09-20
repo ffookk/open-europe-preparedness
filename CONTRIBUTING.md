@@ -1,31 +1,35 @@
-# 贡献指南
+# Contribution guide
 
-## 提交一个清楚的小改动
+## Submit a clear, small change
 
-1. 从 ROADMAP.md 选择一个独立问题，说明预期结果。
-2. 在新分支中完成改动，提交时使用清晰的 commit message。
-3. 提交 Pull Request，写明改动目的、来源、验证方式及局限。
+1. Choose one independent issue from [ROADMAP.md](ROADMAP.md) and describe the expected result.
+2. Make the change on a new branch and use a clear commit message.
+3. Open a pull request explaining its purpose, sources, validation and limitations.
 
-## 证据与数据
+Use English for repository documentation, record descriptions, commit messages, issues, pull requests and discussions. Preserve exact source URLs, identifiers and necessary official names; summarize non-English source material in English.
 
-- 事实记录尽量引用官方文件、原始数据或原始研究，保留准确位置和核验日期。
-- 明确区分来源陈述、作者推断、待核实信息和实验结果。
-- 涉及时效性内容时注明适用时间，更新时保留必要的更正说明。
-- 修正同一主张时尽量保留原有 `id`；若拆成不同主张，应在 `change_history` 中说明拆分关系。
-- 待核查记录的结论确认为 `verified` 后，在更新字段的同时将它移至 `data/verified.json`；不要在两个文件中各保留一份。
-- 不把聊天记录或 AI 回答本身当作事实已获验证的依据。
-- 导入外部内容前检查许可及再分发条件，优先保留链接和必要的最少摘录。
+## Evidence and data
 
-## 隐私与验证
+- Prefer official documents, original datasets or original research for factual records, retaining precise evidence locations and review dates.
+- Distinguish source statements, author inferences, unverified information and experimental results.
+- State the applicable period for time-sensitive claims and retain necessary correction notes when updating them.
+- Keep the existing `id` when correcting the same claim where possible; explain any split into separate claims in `change_history`.
+- When a pending claim becomes `verified`, update its fields and move it to `data/verified.json`; do not keep a copy in both files.
+- Do not treat a chat transcript or an AI answer itself as proof that a fact has been verified.
+- Check licensing and redistribution conditions before importing external content; prefer links and the minimum necessary excerpts.
 
-- 使用虚构或可合法公开的样例，不提交 API 密钥、凭据、真实家庭联系方式或私密对话。
-- 数据改动应能追溯并复核；代码改动应附适合该功能的运行说明和验证结果。
-- 尚未实现或验证的内容明确标记，不把计划写成已完成成果。
+## Privacy and validation
 
-## 自动检查
+- Use synthetic or legally public examples. Do not submit API keys, credentials, real household contact details or private conversations.
+- Data changes should be traceable and reviewable. Code changes should include appropriate running instructions and observed validation results.
+- Clearly label anything not implemented or verified; do not describe plans as completed work.
 
-提交前阅读 [隐私检查说明](docs/privacy.md)，运行项目 README 中的验证命令及 `python3 scripts/privacy_check.py --history`。PR 的 Checks 工作流会执行隐私检查、单元测试，以及真实记录、待核查线索和虚构示例的联合校验。
+## Automated checks
 
-新增或修改 ID 后，应联合校验全部三个数据文件；只检查改动文件无法发现它与其他文件之间的编号冲突。
+Before submitting, read the [privacy check guide](docs/privacy.md), run the validation commands in the README and run `python3 scripts/privacy_check.py --history`. The PR Checks workflow runs privacy checks, unit tests and combined validation of real records, pending leads and synthetic examples.
 
-`main` 当前要求通过 PR 合并，并通过 `validate` 检查；管理员也适用。请在工作分支提交，禁止强制推送或删除主分支。自动检查不替代事实、隐私和使用效果审阅。
+After adding or changing an ID, validate all three data files together. Checking only the changed file cannot detect ID collisions with another file.
+
+`main` currently requires PRs and a passing `validate` check, including for administrators. Commit on a working branch; force pushes and deletion of the main branch are prohibited. Automated checks do not replace review of facts, privacy or actual usability.
+
+Run `python3 scripts/check_english.py` after staging changes. CI checks current tracked text, including decoded JSON values, for CJK scripts. This guard is not a general language classifier; manually review all public wording and GitHub collaboration text for English. Historical revisions are outside this check.
