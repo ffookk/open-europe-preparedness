@@ -6,9 +6,28 @@
 
 ## 当前状态
 
-目前只有项目文档：`README.md`、`ROADMAP.md`、`CONTRIBUTING.md` 和 PR 模板。
+已实现第一版政策记录 JSON Schema、[字段与人工核查规范](docs/record-format.md)、Python 标准库校验 CLI 及回归测试。政策阶段与核查结果分别保存，检查日期、跨文件唯一 ID、来源定位以及已核查记录的必需字段。
 
-**尚未建立或发布已核验的政策数据库；数据 schema、验证程序、网站和查询工具均未实现。** 下方链接仅为后续研究的来源线索，本次初始化没有重新访问或核验其中的政策事实。项目名称中的“数据库”描述建设方向，不表示已有可供查询的数据集。
+**当前有 3 条待核查来源线索、1 条明确标记为 synthetic 的虚构格式示例，真实已核验政策记录为 0 条。** 没有重新访问或核验下方政策来源；网站和查询工具尚未实现。项目名称中的“数据库”描述建设方向，不表示已有可供事实查询的政策数据集。合成示例的 `verified` 状态仅演示字段完整性。
+
+## 本地运行
+
+需要 Python 3.10 或更高版本，无需安装第三方依赖。以下命令不联网：
+
+```sh
+python3 scripts/validate_records.py data/pending.json examples/synthetic.json
+python3 -m unittest discover -s tests -v
+```
+
+校验 CLI 接受一个或多个 JSON 文件，并在所有输入间检查重复 ID。返回 `0` 表示结构检查通过；`1` 表示数据或文件错误。**通过检查不代表政策事实已经核实。** 真实核查仍需阅读原始资料、定位证据，并经过人工 PR 审阅。
+
+| 内容 | 位置 |
+|---|---|
+| 机器可读数据结构 | [`schema/policy-records.schema.json`](schema/policy-records.schema.json) |
+| 字段、状态和人工核查规则 | [`docs/record-format.md`](docs/record-format.md) |
+| 3 条待核查研究线索 | [`data/pending.json`](data/pending.json) |
+| 1 条完全虚构的完整示例 | [`examples/synthetic.json`](examples/synthetic.json) |
+| 标准库校验命令 | [`scripts/validate_records.py`](scripts/validate_records.py) |
 
 ## 项目目标
 
@@ -27,7 +46,7 @@
 
 优先使用政府、议会、法律数据库、国际组织和官方指南。每条记录应提供来源链接、发布机构、发布日期及相关条款、段落或页码，并说明证据支持的具体内容和限制。
 
-尚未审阅来源的线索应标为待核查，最后核查日期留空。链接失效或无法访问只表示需要复查，不能据此判定政策虚假。将来的自动检查仅验证数据格式；事实判断仍需人工审阅证据。
+尚未审阅来源的线索应标为待核查，最后核查日期留空。链接失效或无法访问只表示需要复查，不能据此判定政策虚假。自动检查仅验证数据结构与一致性；事实判断仍需人工审阅证据。
 
 ## 初期工作与验收标准
 

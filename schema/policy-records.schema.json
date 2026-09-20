@@ -1,0 +1,388 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/open-europe-preparedness/policy-records.schema.json",
+  "title": "Open Europe Preparedness records v1",
+  "description": "Structural specification only. Use the repository CLI for cross-file uniqueness, real calendar dates, review chronology, and URL/domain checks. No factual verification is performed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "publisher",
+        "title",
+        "published_at",
+        "locator",
+        "accessed_at",
+        "supports"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[^\\s@\\\\]+$"
+        },
+        "publisher": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supports": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "record_type",
+        "jurisdiction",
+        "topic",
+        "title",
+        "claim",
+        "scope",
+        "policy_stage",
+        "verification_status",
+        "dates",
+        "sources",
+        "last_verified_at",
+        "verification_note",
+        "limitations",
+        "change_history"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+        },
+        "record_type": {
+          "enum": [
+            "real",
+            "synthetic"
+          ]
+        },
+        "jurisdiction": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "topic": {
+          "enum": [
+            "civil_protection",
+            "emergency_stockpiles",
+            "household_preparedness",
+            "other",
+            "reserve_service",
+            "treaty_status"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "claim": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "scope": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "policy_stage": {
+          "enum": [
+            "adopted",
+            "announced",
+            "completed",
+            "implementing",
+            "in_force",
+            "proposed",
+            "unknown",
+            "withdrawn"
+          ]
+        },
+        "verification_status": {
+          "enum": [
+            "disputed",
+            "inconclusive",
+            "outdated",
+            "pending",
+            "verified"
+          ]
+        },
+        "dates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "announced_at",
+            "adopted_at",
+            "effective_at",
+            "target_at"
+          ],
+          "properties": {
+            "announced_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "adopted_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "effective_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "target_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "last_verified_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification_note": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "change_history": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "summary"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "summary": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verification_status": {
+                "const": "pending"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "last_verified_at": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "last_verified_at": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification_status": {
+                "const": "verified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sources": {
+                "items": {
+                  "properties": {
+                    "locator": {
+                      "type": "string",
+                      "pattern": "\\S"
+                    },
+                    "supports": {
+                      "type": "string",
+                      "pattern": "\\S"
+                    },
+                    "accessed_at": {
+                      "type": "string",
+                      "format": "date",
+                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "record_type": {
+                "const": "synthetic"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "id": {
+                "pattern": "^synthetic-"
+              },
+              "sources": {
+                "items": {
+                  "properties": {
+                    "url": {
+                      "pattern": "^https://(example\\.org|example\\.invalid)\\.*(:443)?([/?#]|$)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "id": {
+                "not": {
+                  "pattern": "^synthetic-"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
