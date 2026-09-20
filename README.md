@@ -12,7 +12,7 @@
 
 ## 本地运行
 
-需要 Python 3.10 或更高版本，无需安装第三方依赖。以下命令不联网：
+需要 Python 3.10 或更高版本，无需安装第三方依赖。以下命令在仓库根目录运行，且不联网：
 
 ```sh
 python3 scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json
