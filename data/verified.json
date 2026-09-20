@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "eu-preparedness-union-strategy-adoption",
+      "record_type": "real",
+      "jurisdiction": "EU",
+      "topic": "civil_protection",
+      "title": "欧盟应急准备联盟战略：非立法战略于2025年通过",
+      "claim": "欧盟委员会于2025年3月26日通过应急准备联盟战略；官方实施追踪器将其列为已通过的非立法事项。",
+      "scope": "欧盟层面的战略通过情况；仅确认此战略文件的性质和通过日期。",
+      "policy_stage": "adopted",
+      "verification_status": "verified",
+      "dates": {
+        "announced_at": "2025-03-26",
+        "adopted_at": "2025-03-26",
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://commission.europa.eu/priorities-2024-2029/security-and-defence/implementation-tracker_en",
+          "publisher": "欧盟委员会",
+          "title": "安全与防务实施追踪器",
+          "published_at": null,
+          "locator": "Non-legislative items > Adopted：2025年3月26日的 EU preparedness union strategy 条目及本节说明",
+          "accessed_at": "2026-09-20",
+          "supports": "支持委员会已通过该非立法战略及日期；不证明其中后续行动已实施。"
+        },
+        {
+          "url": "https://commission.europa.eu/document/download/526806b6-c4e1-43d1-81b7-947308efbab1_en?filename=Joint+Communication.pdf",
+          "publisher": "欧盟委员会及欧盟外交与安全政策高级代表",
+          "title": "欧洲应急准备联盟战略联合通报（JOIN(2025) 130 final）",
+          "published_at": "2025-03-26",
+          "locator": "封面（PDF第1页）：机构、文件编号及 Brussels, 26.3.2025",
+          "accessed_at": "2026-09-20",
+          "supports": "核对原始联合通报身份与日期。"
+        }
+      ],
+      "last_verified_at": "2026-09-20",
+      "verification_note": "AI 代理于本轮实际读取所列官方原始来源并按定位逐项复核；verified 表示证据支持本条精确主张，不表示人工认证或独立现场核查。",
+      "limitations": [
+        "adopted 仅描述非立法战略文件的通过；不等于新增家庭法律义务，也不等于30项关键行动已经完成。",
+        "本条没有核验各成员国法律或各项后续措施的实施进度；effective_at 留空。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "首次依据本轮读取的官方原文建立记录；审阅方式为 AI 代理来源复核，尚待独立人工审阅。"
+        }
+      ]
+    },
+    {
+      "id": "eu-population-self-sufficiency-guidelines-plan",
+      "record_type": "real",
+      "jurisdiction": "EU",
+      "topic": "household_preparedness",
+      "title": "欧盟72小时自给指引：2025年战略中的拟议行动",
+      "claim": "2025年3月26日战略第14项关键行动写明，委员会将向成员国提出使民众至少自给72小时的指引；附件把制定指引列为2026年的指示性安排。",
+      "scope": "仅描述2025年战略发布时的指引制定计划，不判断截至核验日指引是否另行发布或各国是否立法。",
+      "policy_stage": "announced",
+      "verification_status": "verified",
+      "dates": {
+        "announced_at": "2025-03-26",
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://commission.europa.eu/document/download/526806b6-c4e1-43d1-81b7-947308efbab1_en?filename=Joint+Communication.pdf",
+          "publisher": "欧盟委员会及欧盟外交与安全政策高级代表",
+          "title": "欧洲应急准备联盟战略联合通报（JOIN(2025) 130 final）",
+          "published_at": "2025-03-26",
+          "locator": "第3节 Population Preparedness；印刷页10（PDF第11页），关键行动14及首段",
+          "accessed_at": "2026-09-20",
+          "supports": "支持拟向成员国提出最低72小时自给指引；这是未来行动表述，不能当作家庭强制囤货法律。"
+        },
+        {
+          "url": "https://commission.europa.eu/document/download/755117bc-10ac-4549-a438-9767cf8f19d1_en?filename=Placeholder+Annex.pdf",
+          "publisher": "欧盟委员会及欧盟外交与安全政策高级代表",
+          "title": "欧洲应急准备联盟战略行动计划附件",
+          "published_at": "2025-03-26",
+          "locator": "封面；印刷页1说明指示性时间表；印刷页3（PDF第4页）第28行",
+          "accessed_at": "2026-09-20",
+          "supports": "附件将制定72小时自给指引的指示性年份列为2026，未给出月日或完成凭证。"
+        }
+      ],
+      "last_verified_at": "2026-09-20",
+      "verification_note": "AI 代理于本轮实际读取所列官方原始来源并按定位逐项复核；verified 表示证据支持本条精确主张，不表示人工认证或独立现场核查。",
+      "limitations": [
+        "announced 对应原文将来时的制定指引计划，不声称指引草案已经提出、已经生效或已经完成。",
+        "2026仅为指示性年份，现行日期字段要求完整年月日，因此 target_at 为 null，不能自行填为12月31日。",
+        "未核查2025年文件之后的指引进度或成员国要求；本条不能用作当前国家或家庭义务的完整结论。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
+        },
+        {
+          "date": "2026-09-20",
+          "summary": "将 eu-household-preparedness-lead 拆解为本条指引计划与独立战略通过记录；删除旧宽泛线索，保留原始线索历史。"
+        }
+      ]
+    },
+    {
+      "id": "eu-resceu-energy-generator-deployments",
+      "record_type": "real",
+      "jurisdiction": "EU",
+      "topic": "emergency_stockpiles",
+      "title": "rescEU能源储备：官方报告已向乌克兰部署发电机",
+      "claim": "欧盟委员会 rescEU 页面报告，rescEU 已向乌克兰部署数千台发电机，帮助医院及其他关键基础设施维持基本服务。",
+      "scope": "rescEU能源储备对乌克兰的实际部署；依据2026年9月20日访问的官方项目页。",
+      "policy_stage": "implementing",
+      "verification_status": "verified",
+      "dates": {
+        "announced_at": null,
+        "adopted_at": null,
+        "effective_at": null,
+        "target_at": null
+      },
+      "sources": [
+        {
+          "url": "https://civil-protection-humanitarian-aid.ec.europa.eu/what/civil-protection/resceu_en",
+          "publisher": "欧盟委员会欧洲民事保护和人道主义援助行动总司（DG ECHO）",
+          "title": "rescEU 官方项目说明",
+          "published_at": null,
+          "locator": "rescEU at a glance > Energy，最后一段（以 In response 开头）",
+          "accessed_at": "2026-09-20",
+          "supports": "支持官方报告已实际部署数千台发电机及其用途；不提供可复算的逐台清单或部署起始日期。"
+        }
+      ],
+      "last_verified_at": "2026-09-20",
+      "verification_note": "AI 代理于本轮实际读取所列官方原始来源并按定位逐项复核；verified 表示证据支持本条精确主张，不表示人工认证或独立现场核查。",
+      "limitations": [
+        "这是对项目主管机构公开陈述的来源复核，不是独立审计，也没有核验逐台交付清单或精确数量。",
+        "网页是动态项目说明；页脚更新时间为2026年8月11日，不能代替未知的首发日、部署日期或完成日期，相关日期字段留空。",
+        "implementing 仅表示能源储备已有执行证据，不表示rescEU全部能力建成；不采用同页不同章节中口径不明的承办国数量。"
+      ],
+      "change_history": [
+        {
+          "date": "2026-09-20",
+          "summary": "首次依据本轮读取的官方原文建立记录；审阅方式为 AI 代理来源复核，尚待独立人工审阅。"
+        }
+      ]
+    }
+  ]
+}

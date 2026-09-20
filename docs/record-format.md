@@ -1,4 +1,4 @@
-# 政策记录 v1：字段和人工核查规则
+# 政策记录 v1：字段和证据审阅规则
 
 机器可读结构见 [`schema/policy-records.schema.json`](../schema/policy-records.schema.json)。标准库 CLI 是本仓库提交检查的执行入口：它额外检查真实日历日期、跨文件 ID 唯一性、来源网址、最后核查日期与来源访问日期的关系。JSON Schema 校验器通常需要另行启用 `format` 检查，也不能代替跨文件或事实审查。
 
@@ -16,7 +16,7 @@
 | `verification_status` | 对当前主张的核查结果，见下表。 |
 | `dates` | 固定含 `announced_at`、`adopted_at`、`effective_at`、`target_at`；每项为 `YYYY-MM-DD` 或 `null`。目标日期可以在未来。 |
 | `sources` | 至少一个来源，字段见下一节。 |
-| `last_verified_at` | 最近一次人工证据审查日期；`pending` 必须为 `null`，其他核查结果必须有有效日期且不得在未来。 |
+| `last_verified_at` | 最近一次证据审阅日期；`pending` 必须为 `null`，其他核查结果必须有有效日期且不得在未来。 |
 | `verification_note` | 当前核查方法、结论及边界。格式检查通过不能写成已人工核实。 |
 | `limitations` | 非空字符串数组，明确证据局限；不能用空白内容充数。 |
 | `change_history` | 至少一个 `{ "date": "YYYY-MM-DD", "summary": "…" }` 条目；记录结论更正和重要状态变化，不记录贡献者私人信息。 |
@@ -37,12 +37,14 @@
 | 核查结果 | 含义 |
 |---|---|
 | `pending` | 尚未完成证据审阅。 |
-| `verified` | 人工审阅原始证据后，确认其支持当前精确表述。 |
+| `verified` | 阅读原始证据后，判断其支持当前精确表述；审阅者类型和边界须在 verification_note 写明。 |
 | `disputed` | 已审阅证据与当前主张存在冲突，需要解释。 |
 | `outdated` | 已确认原记录或证据不再反映当前状态；说明适用时间。 |
 | `inconclusive` | 已尝试核查，但证据不足以确定结论。 |
 
 例如，`proposed + verified` 表示“确实存在该提案”，不表示已经通过。`unknown + verified` 也可能用于确认某个事实、但尚无法把政策归入后续阶段。状态间不存在自动推进规则。
+
+`verified` 不表示政府背书、独立审计或人工认证。人工和 AI 代理的来源审阅均须明确记录审阅方式；代理审阅不得写成已人工确认。第一阶段的人工审阅验收门槛保留。
 
 未阅读来源的全新线索使用 `policy_stage: "unknown"`、`verification_status: "pending"` 和 `last_verified_at: null`。这是编辑规则；CLI 不会自动从核查状态推导政策阶段。无法访问链接也不能自动判为 `disputed` 或把某项政策判为虚假。
 
@@ -54,17 +56,17 @@
 - `publisher` / `title`：发布机构和文档标题；未审阅线索必须明确标题仅是线索标签。
 - `published_at`：原文发布日期；未知时为 `null`，不要用访问日代替。
 - `locator`：条文号、页码、章节或可稳定定位的段落；未找到时为 `null`。
-- `accessed_at`：实际人工访问日期；未访问时为 `null`。不得写未来日期，也不得晚于该记录的最后核查日期。
+- `accessed_at`：实际访问日期；未访问时为 `null`。不得写未来日期，也不得晚于该记录的最后核查日期。
 - `supports`：用自己的话概述该位置具体支持什么，以及不能推出什么；未阅读时为 `null`。避免复制整段受版权保护内容。
 
 标为 `verified` 时，每个来源的 `locator`、`accessed_at`、`supports` 都必须完整；未审阅的延伸阅读线索应留在独立 `pending` 记录。其他核查结果可保留缺失的来源定位，以便表达无法核实的实际情况，但必须给出审查日期和说明。
 
 ## 合成示例、真实数据和运行检查
 
-`examples/synthetic.json` 只有 1 条虚构示例。它用 `verified` 演示完整字段，所写访问日、核查日、机构和支持内容均为虚构。来源仅允许 `example.org` 或 `example.invalid`，不计入真实记录或已核验政策数量。`data/pending.json` 有 3 条来自既有 README 的待核查研究线索，其中条约索引仍需逐国拆分；它们也不计入第一阶段的 10 条已核验独立政策记录。
+`examples/synthetic.json` 只有 1 条虚构示例。它用 `verified` 演示完整字段，所写访问日、核查日、机构和支持内容均为虚构。来源仅允许 `example.org` 或 `example.invalid`，不计入真实记录或已核验政策数量。`data/verified.json` 有3条完成代理来源复核的真实记录，方法和范围见 [来源复核记录](source-review.md)。`data/pending.json` 保留2条来自既有 README 的待核查线索，其中条约索引仍需逐国拆分。待核查线索、合成示例和未经人工审阅的记录均不计入第一阶段10条人工审阅政策记录目标。
 
 ```sh
-python3 scripts/validate_records.py data/pending.json examples/synthetic.json
+python3 scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json
 python3 -m unittest discover -s tests -v
 ```
 
