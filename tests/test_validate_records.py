@@ -19,9 +19,18 @@ class RecordValidationTests(unittest.TestCase):
 
     def test_repository_fixtures_pass_together(self):
         seen = set()
-        for path in (ROOT / 'data/pending.json', ROOT / 'examples/synthetic.json'):
+        for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
             document = json.loads(path.read_text(encoding='utf-8'))
             self.assertEqual([], validate_document(document, path.name, seen))
+
+    def test_dataset_partitions_cannot_mix_synthetic_or_unreviewed_records(self):
+        for filename, expected_status in (('verified.json', 'verified'), ('pending.json', 'pending')):
+            records = json.loads((ROOT / 'data' / filename).read_text(encoding='utf-8'))['records']
+            self.assertTrue(records)
+            for record in records:
+                with self.subTest(dataset=filename, record_id=record['id']):
+                    self.assertEqual('real', record['record_type'])
+                    self.assertEqual(expected_status, record['verification_status'])
 
     def test_verified_proposal_does_not_require_adoption_or_effective_date(self):
         self.assertEqual('proposed', self.record['policy_stage'])
@@ -126,9 +135,11 @@ class RecordValidationTests(unittest.TestCase):
     def test_cli_reports_success_but_never_claims_factual_verification(self):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            result = main([str(ROOT / 'data/pending.json'), str(ROOT / 'examples/synthetic.json')])
+            paths = sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json'))
+            result = main([str(path) for path in paths])
         self.assertEqual(0, result)
-        self.assertIn('4 structurally valid records', output.getvalue())
+        expected_count = sum(len(json.loads(path.read_text(encoding='utf-8'))['records']) for path in paths)
+        self.assertIn(f'{expected_count} structurally valid records', output.getvalue())
         self.assertIn('not factual verification', output.getvalue())
 
     def test_cli_rejects_malformed_duplicate_key_and_non_finite_json(self):

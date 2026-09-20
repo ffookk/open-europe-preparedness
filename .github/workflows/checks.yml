@@ -25,5 +25,5 @@ jobs:
         run: python scripts/privacy_check.py --history
       - name: Unit tests
         run: python -m unittest discover -s tests -v
-      - name: Validate documented synthetic example
-        run: python scripts/validate_records.py data/pending.json examples/synthetic.json
+      - name: Validate documented examples
+        run: python scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json

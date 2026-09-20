@@ -80,46 +80,6 @@
           "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
         }
       ]
-    },
-    {
-      "id": "eu-household-preparedness-lead",
-      "record_type": "real",
-      "jurisdiction": "EU",
-      "topic": "household_preparedness",
-      "title": "欧盟家庭应急准备：待核查线索",
-      "claim": "待核查问题：欧盟原始文件提出了什么家庭准备建议，其适用范围及法律性质是什么？",
-      "scope": "欧盟；成员国具体要求须单独核查",
-      "policy_stage": "unknown",
-      "verification_status": "pending",
-      "dates": {
-        "announced_at": null,
-        "adopted_at": null,
-        "effective_at": null,
-        "target_at": null
-      },
-      "sources": [
-        {
-          "url": "https://commission.europa.eu/topics/preparedness_en",
-          "publisher": "欧盟委员会",
-          "title": "README 中的 Preparedness 来源线索",
-          "published_at": null,
-          "locator": null,
-          "accessed_at": null,
-          "supports": null
-        }
-      ],
-      "last_verified_at": null,
-      "verification_note": "仅从仓库原有 README 转录研究线索；未访问来源、核验时效或确认任何政策事实。",
-      "limitations": [
-        "来源链接、机构归属、具体文件版本和证据位置仍需人工复核。",
-        "不能将此待核查问题引用为已确认的政策结论。"
-      ],
-      "change_history": [
-        {
-          "date": "2026-09-20",
-          "summary": "从现有 README 整理为待核查线索；没有进行事实核验。"
-        }
-      ]
     }
   ]
 }
