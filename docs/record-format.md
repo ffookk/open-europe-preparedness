@@ -81,6 +81,8 @@ CLI 不比较宣布、通过、生效和目标日期的先后关系；时间线�
 
 `examples/synthetic.json` 只有 1 条虚构示例。它用 `verified` 演示完整字段，所写访问日、核查日、机构和支持内容均为虚构。来源仅允许 `example.org` 或 `example.invalid`，不计入真实记录或已核验政策数量。`data/verified.json` 有3条完成代理来源复核的真实记录，方法和范围见 [来源复核记录](source-review.md)。`data/pending.json` 保留2条来自既有 README 的待核查线索，其中条约索引仍需逐国拆分。待核查线索、合成示例和未经人工审阅的记录均不计入第一阶段10条人工审阅政策记录目标。
 
+合成来源规范化后的域名须精确匹配允许列表，`sub.example.org` 等子域名不在允许列表中。
+
 ```sh
 python3 scripts/validate_records.py data/verified.json data/pending.json examples/synthetic.json
 python3 -m unittest discover -s tests -v
