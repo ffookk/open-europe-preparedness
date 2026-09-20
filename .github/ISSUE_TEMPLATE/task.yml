@@ -9,7 +9,7 @@ body:
     id: problem
     attributes:
       label: Problem and expected result
-      description: State one concrete problem and how completion can be checked.
+      description: State one concrete problem and how completion can be checked; for a record correction, include its public ID and the affected field.
     validations:
       required: true
   - type: textarea
