@@ -71,6 +71,7 @@ SCRIPT = r"""
       const record=row.after||row.before;
       if(view==="queue"&&!row.reasons.length)return false;
       if(el("change-filter").value&&row.change!==el("change-filter").value)return false;
+      if(el("source-count-filter").value&&(el("source-count-filter").value==="single")!==(record.sources.length===1))return false;
       if(el("publisher-filter").value&&!record.sources.some(source=>source.publisher===el("publisher-filter").value))return false;
       if(el("review-date-filter").value&&(el("review-date-filter").value==="known")!==(record.last_verified_at!==null))return false;
       if(el("stage-filter").value&&record.policy_stage!==el("stage-filter").value)return false;
@@ -147,6 +148,7 @@ def render_report(report: dict) -> str:
 <body><header><div class="kicker">Open Europe Preparedness · Offline maintenance</div><h1>Review what changed.<br>Keep the evidence intact.</h1><p>Compare complete catalog snapshots and prepare human-reviewed corrections using explicit structural triage reasons.</p><p id="context" class="cutoff"></p></header>
 <main><section class="panel filters" aria-label="Maintenance filters"><h2>Focus the review</h2><div id="filters"><label for="search">Search records, evidence and changes</label><input id="search" type="search" maxlength="1000" autocomplete="off" placeholder="Claim, source, field or reason">
 <div class="filter-grid">
+<div><label for="source-count-filter">Source entries</label><select id="source-count-filter"><option value="">Any source count</option><option value="single">One source entry</option><option value="multiple">Multiple source entries</option></select></div>
 <div><label for="publisher-filter">Source publisher</label><select id="publisher-filter"><option value="">All publishers</option></select></div>
 <div><label for="review-date-filter">Review date</label><select id="review-date-filter"><option value="">Known or missing</option><option value="known">Known review date</option><option value="missing">Missing review date</option></select></div>
 <div><label for="stage-filter">Policy stage</label><select id="stage-filter"><option value="">All stages</option></select></div>
