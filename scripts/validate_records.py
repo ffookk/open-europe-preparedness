@@ -44,7 +44,7 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
             return False
         for field in sorted(expected - value.keys()):
             error(path, f"missing field {field}")
-        for field in sorted(value.keys() - expected):
+        for _ in value.keys() - expected:
             error(path, "unknown field (remove fields outside the schema)")
         return True
 

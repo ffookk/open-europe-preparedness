@@ -72,6 +72,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--max-errors N` limits displayed details, not validation work. An omitted-error count remains visible and the exit code stays nonzero; N=0 shows only that count.
 
+- Python API callers receive generic schema errors for unknown keys even if their in-memory dictionary uses mixed key types.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
