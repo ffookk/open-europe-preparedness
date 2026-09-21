@@ -40,6 +40,11 @@ class RecordValidationTests(unittest.TestCase):
         self.record["id"] = "INVALID"
         self.assertNotIn("SUMMARY", self.run_cli("--summary")[1])
 
+    def test_summary_verification_states(self):
+        report = json.loads(self.run_cli("--summary")[1].split("SUMMARY: ")[1])
+        self.assertEqual(1, report["verification_states"]["verified"])
+        self.assertEqual(1, sum(report["verification_states"].values()))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

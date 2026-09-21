@@ -18,6 +18,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--summary` appends fixed aggregate counts only after all inputs pass. It never includes record IDs, source URLs, paths or user text; counts do not establish factual verification.
 
+- The `verification_states` summary includes all schema categories, with zero for absent categories.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
