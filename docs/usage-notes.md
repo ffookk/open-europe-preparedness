@@ -30,6 +30,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `jurisdictions` counts distinct exact jurisdiction labels. Different spellings remain distinct; labels are not printed.
 
+- `policy_dates` counts non-null values for each policy date field; it does not evaluate policy implementation.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
