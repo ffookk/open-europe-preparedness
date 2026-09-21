@@ -66,6 +66,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - Standard input can be combined with files and all existing gates; it counts as one ordinal input and is subject to cross-input ID checks.
 
+- `--version` reports the supported schema version and exits without requiring or reading input files.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
