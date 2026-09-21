@@ -191,7 +191,8 @@ def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
 
 
 def summarize(records: list[dict]) -> dict:
-    return {"policy_stages": {value: sum(r["policy_stage"] == value for r in records) for value in sorted(STAGES)},
+    return {"topics": {value: sum(r["topic"] == value for r in records) for value in sorted(TOPICS)},
+            "policy_stages": {value: sum(r["policy_stage"] == value for r in records) for value in sorted(STAGES)},
             "verification_states": {value: sum(r["verification_status"] == value for r in records) for value in sorted(STATUSES)},
             "records": len(records),
             "record_types": {kind: sum(r["record_type"] == kind for r in records) for kind in ("real", "synthetic")}}
