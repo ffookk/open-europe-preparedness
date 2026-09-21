@@ -42,6 +42,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--require-verified` enforces the recorded status: only verified records are allowed. It does not certify human review.
 
+- `--require-source-locators` requires every source to have a non-null `locator` value, without filling missing metadata automatically.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
