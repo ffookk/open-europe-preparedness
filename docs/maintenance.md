@@ -116,3 +116,4 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 ## Additional report controls
 
 - **Topic:** filter the after/current record by topic, using the before record for a removal.
+- **Policy stage:** filter stored stages independently of evidence review status; a stage does not establish evidence quality.
