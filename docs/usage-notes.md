@@ -70,6 +70,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--max-input-bytes N` applies a per-input UTF-8 byte ceiling to files and stdin. Equality passes. Files and binary stdin are read as raw bytes before UTF-8 decoding; text-only stdin streams are measured after UTF-8 encoding. No limit is imposed by default.
 
+- `--max-errors N` limits displayed details, not validation work. An omitted-error count remains visible and the exit code stays nonzero; N=0 shows only that count.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

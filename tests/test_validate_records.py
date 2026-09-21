@@ -235,6 +235,15 @@ class RecordValidationTests(unittest.TestCase):
                 self.assertEqual(0, main(["--max-input-bytes", str(len(raw)), str(path)]))
                 self.assertEqual(1, main(["--max-input-bytes", str(len(raw) - 1), str(path)]))
 
+    def test_error_limit_preserves_failure_and_omitted_count(self):
+        self.record["id"] = "synthetic-BAD"
+        self.record["title"] = ""
+        code, output, error = self.run_cli("--max-errors", "1")
+        self.assertEqual((1, ""), (code, output))
+        self.assertEqual(2, len(error.splitlines()))
+        self.assertIn("1 additional validation errors omitted", error)
+        self.assertEqual(1, len(self.run_cli("--max-errors", "0")[2].splitlines()))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
