@@ -36,6 +36,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--json` emits only the aggregate JSON object on success and implies a summary. Errors remain on stderr with a nonzero exit code.
 
+- `--real-only` rejects synthetic records. Optional gate errors use `record-N`, numbered across the combined input order, without echoing IDs.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
