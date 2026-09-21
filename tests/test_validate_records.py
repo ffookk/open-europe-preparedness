@@ -251,6 +251,15 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(2, len(errors))
         self.assertNotIn("synthetic-private", "\n".join(errors))
 
+    def test_deeply_nested_stdin_has_a_fixed_error(self):
+        content = "[" * 2000 + "0" + "]" * 2000
+        error = io.StringIO()
+        with mock.patch("sys.stdin", io.StringIO(content)), contextlib.redirect_stderr(error):
+            self.assertEqual(1, main(["-"]))
+        self.assertIn("input-1:", error.getvalue())
+        self.assertNotIn("Traceback", error.getvalue())
+        self.assertNotIn(content, error.getvalue())
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
