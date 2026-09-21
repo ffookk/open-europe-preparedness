@@ -170,6 +170,14 @@ class RecordValidationTests(unittest.TestCase):
         self.record["verification_status"] = "pending"
         self.assertEqual(1, self.run_cli("--max-review-age", "999999999")[0])
 
+    def test_max_access_age_boundary_and_missing_dates(self):
+        self.record["sources"][0]["accessed_at"] = "2024-01-03"
+        self.assertEqual(0, self.run_cli("--as-of", "2024-01-04", "--max-access-age", "1")[0])
+        self.assertEqual(1, self.run_cli("--as-of", "2024-01-04", "--max-access-age", "0")[0])
+        self.record["sources"][0]["accessed_at"] = None
+        self.record["verification_status"] = "inconclusive"
+        self.assertEqual(1, self.run_cli("--max-access-age", "999999999")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

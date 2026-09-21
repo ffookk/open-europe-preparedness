@@ -194,6 +194,8 @@ def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.
     errors = []
     for index, record in enumerate(records):
         label = f"record-{index + 1}"
+        if args.max_access_age is not None and any(value is None or (ceiling - dt.date.fromisoformat(value)).days > args.max_access_age for value in [s["accessed_at"] for s in record["sources"]]):
+            errors.append(f"{label}: accessed_at is missing or exceeds the age limit")
         if args.max_review_age is not None and any(value is None or (ceiling - dt.date.fromisoformat(value)).days > args.max_review_age for value in [record["last_verified_at"]]):
             errors.append(f"{label}: last_verified_at is missing or exceeds the age limit")
         if args.unique_sources and len({s["url"] for s in record["sources"]}) != len(record["sources"]):
@@ -272,6 +274,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--min-source-domains", type=parse_count, default=0, metavar="N", help="minimum distinct source hostnames per record")
     parser.add_argument("--unique-sources", action="store_true", help="reject repeated exact source URLs within each record")
     parser.add_argument("--max-review-age", type=parse_count, metavar="DAYS", help="maximum last_verified_at age; missing dates fail")
+    parser.add_argument("--max-access-age", type=parse_count, metavar="DAYS", help="maximum accessed_at age; missing dates fail")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
