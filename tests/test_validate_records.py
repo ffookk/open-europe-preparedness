@@ -62,6 +62,12 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual({"total": 1, "accessed_at": 1, "locator": 1, "supports": 1}, report["sources"])
         self.assertNotIn("synthetic-private-support-marker", output)
 
+    def test_summary_distinct_source_domains_are_not_echoed(self):
+        self.record["sources"].append({**self.record["sources"][0], "url": "https://EXAMPLE.INVALID./other"})
+        output = self.run_cli("--summary")[1]
+        self.assertEqual(1, json.loads(output.split("SUMMARY: ")[1])["source_domains"])
+        self.assertNotIn("EXAMPLE.INVALID", output)
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
