@@ -80,6 +80,11 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(1, report["policy_dates"]["announced_at"])
         self.assertEqual(0, report["policy_dates"]["effective_at"])
 
+    def test_summary_publication_date_coverage(self):
+        self.record["sources"][0]["published_at"] = None
+        report = json.loads(self.run_cli("--summary")[1].split("SUMMARY: ")[1])
+        self.assertEqual({"known": 0, "unknown": 1}, report["source_publication_dates"])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
