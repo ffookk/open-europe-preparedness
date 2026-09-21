@@ -141,6 +141,14 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(0, self.run_cli()[0])
         self.assertEqual(1, self.run_cli("--require-source-support")[0])
 
+    def test_minimum_source_count_boundary(self):
+        self.assertEqual(0, self.run_cli("--min-sources", "1")[0])
+        self.assertEqual(1, self.run_cli("--min-sources", "2")[0])
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit):
+            main(["--min-sources=synthetic-private-number", "ignored.json"])
+        self.assertNotIn("synthetic-private-number", stderr.getvalue())
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
