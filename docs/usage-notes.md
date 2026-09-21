@@ -76,6 +76,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - Excessively nested JSON produces the same value-free input failure instead of an uncaught decoder recursion traceback.
 
+- The Python `as_of` argument must be a date object or None; strings and datetime objects receive a fixed validation error.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
