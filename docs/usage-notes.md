@@ -34,6 +34,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `source_publication_dates` separates known and unknown citation publication dates; unknown dates remain null in the input.
 
+- `--json` emits only the aggregate JSON object on success and implies a summary. Errors remain on stderr with a nonzero exit code.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

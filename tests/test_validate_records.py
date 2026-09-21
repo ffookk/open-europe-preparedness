@@ -85,6 +85,13 @@ class RecordValidationTests(unittest.TestCase):
         report = json.loads(self.run_cli("--summary")[1].split("SUMMARY: ")[1])
         self.assertEqual({"known": 0, "unknown": 1}, report["source_publication_dates"])
 
+    def test_json_summary_is_machine_readable_and_success_only(self):
+        code, output, error = self.run_cli("--json")
+        self.assertEqual((0, ""), (code, error))
+        self.assertEqual(1, json.loads(output)["records"])
+        self.record["id"] = "INVALID"
+        self.assertEqual("", self.run_cli("--json")[1])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

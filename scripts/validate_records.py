@@ -225,6 +225,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",
                         help="inclusive ceiling for review and source access dates (default: current UTC date)")
     parser.add_argument("--summary", action="store_true", help="append safe aggregate counts after successful validation")
+    parser.add_argument("--json", action="store_true", help="emit only a JSON aggregate summary on success")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
@@ -249,6 +250,9 @@ def main(argv: list[str] | None = None) -> int:
         for error in errors:
             print(error, file=sys.stderr)
         return 1
+    if args.json:
+        print(json.dumps(summarize(records), sort_keys=True))
+        return 0
     print(f"PASS: {count} structurally valid records in {len(args.files)} files. This is not factual verification.")
     if args.summary:
         print("SUMMARY: " + json.dumps(summarize(records), sort_keys=True))
