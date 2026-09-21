@@ -71,6 +71,7 @@ SCRIPT = r"""
       const record=row.after||row.before;
       if(view==="queue"&&!row.reasons.length)return false;
       if(el("change-filter").value&&row.change!==el("change-filter").value)return false;
+      if(el("review-date-filter").value&&(el("review-date-filter").value==="known")!==(record.last_verified_at!==null))return false;
       if(el("stage-filter").value&&record.policy_stage!==el("stage-filter").value)return false;
       if(el("topic-filter").value&&record.topic!==el("topic-filter").value)return false;
       if(el("jurisdiction").value&&record.jurisdiction!==el("jurisdiction").value)return false;
@@ -144,6 +145,7 @@ def render_report(report: dict) -> str:
 <body><header><div class="kicker">Open Europe Preparedness · Offline maintenance</div><h1>Review what changed.<br>Keep the evidence intact.</h1><p>Compare complete catalog snapshots and prepare human-reviewed corrections using explicit structural triage reasons.</p><p id="context" class="cutoff"></p></header>
 <main><section class="panel filters" aria-label="Maintenance filters"><h2>Focus the review</h2><div id="filters"><label for="search">Search records, evidence and changes</label><input id="search" type="search" maxlength="1000" autocomplete="off" placeholder="Claim, source, field or reason">
 <div class="filter-grid">
+<div><label for="review-date-filter">Review date</label><select id="review-date-filter"><option value="">Known or missing</option><option value="known">Known review date</option><option value="missing">Missing review date</option></select></div>
 <div><label for="stage-filter">Policy stage</label><select id="stage-filter"><option value="">All stages</option></select></div>
 <div><label for="topic-filter">Topic</label><select id="topic-filter"><option value="">All topics</option></select></div>
 <div id="change-controls"><label for="change-filter">Snapshot change</label><select id="change-filter"><option value="">All changes</option></select></div><div><label for="jurisdiction">Jurisdiction</label><select id="jurisdiction"><option value="">All</option></select></div><div><label for="record-type">Record type</label><select id="record-type"><option value="">All</option></select></div><div><label for="status-filter">Record review status</label><select id="status-filter"><option value="">All</option></select></div><div><label for="reason-filter">Structural triage reason</label><select id="reason-filter"><option value="">All reasons</option></select></div><div id="transition-controls"><label for="transition-filter">Independent field transitions</label><select id="transition-filter"><option value="">All</option><option value="policy_stage_changed">Policy stage changed</option><option value="verification_status_changed">Review status changed</option></select></div></div></div>
