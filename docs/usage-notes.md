@@ -26,6 +26,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `sources` reports total citations and counts with access dates, locators and support notes, without printing their contents.
 
+- `source_domains` counts distinct hostnames after case and trailing-dot normalization. It does not list them or imply independent institutions.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
