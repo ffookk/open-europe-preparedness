@@ -45,6 +45,11 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(1, report["verification_states"]["verified"])
         self.assertEqual(1, sum(report["verification_states"].values()))
 
+    def test_summary_policy_stages(self):
+        report = json.loads(self.run_cli("--summary")[1].split("SUMMARY: ")[1])
+        self.assertEqual(1, report["policy_stages"]["proposed"])
+        self.assertEqual(1, sum(report["policy_stages"].values()))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

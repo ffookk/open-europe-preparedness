@@ -20,6 +20,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - The `verification_states` summary includes all schema categories, with zero for absent categories.
 
+- The `policy_stages` summary includes all schema categories, with zero for absent categories.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
