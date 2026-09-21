@@ -178,6 +178,12 @@ class RecordValidationTests(unittest.TestCase):
         self.record["verification_status"] = "inconclusive"
         self.assertEqual(1, self.run_cli("--max-access-age", "999999999")[0])
 
+    def test_minimum_batch_size_combines_files(self):
+        self.assertEqual(1, self.run_cli("--min-records", "2")[0])
+        other = copy.deepcopy(self.document)
+        other["records"][0]["id"] = "synthetic-second"
+        self.assertEqual(0, self.run_cli("--min-records", "2", documents=[self.document, other])[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

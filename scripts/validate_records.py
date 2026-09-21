@@ -275,6 +275,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--unique-sources", action="store_true", help="reject repeated exact source URLs within each record")
     parser.add_argument("--max-review-age", type=parse_count, metavar="DAYS", help="maximum last_verified_at age; missing dates fail")
     parser.add_argument("--max-access-age", type=parse_count, metavar="DAYS", help="maximum accessed_at age; missing dates fail")
+    parser.add_argument("--min-records", type=parse_count, default=0, metavar="N", help="minimum combined record count")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
@@ -297,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
             records.extend(document["records"])
     if not errors:
         errors.extend(admission_errors(records, args, ceiling))
+        if len(records) < args.min_records:
+            errors.append("batch: record count is below the required minimum")
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
