@@ -190,6 +190,15 @@ def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
     return result
 
 
+def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.date) -> list[str]:
+    errors = []
+    for index, record in enumerate(records):
+        label = f"record-{index + 1}"
+        if args.real_only and record["record_type"] != "real":
+            errors.append(f"{label}: real records are required")
+    return errors
+
+
 def source_domains(record: dict) -> set[str]:
     return {urlsplit(source["url"]).hostname.lower().rstrip(".") for source in record["sources"]}
 
@@ -226,6 +235,7 @@ def main(argv: list[str] | None = None) -> int:
                         help="inclusive ceiling for review and source access dates (default: current UTC date)")
     parser.add_argument("--summary", action="store_true", help="append safe aggregate counts after successful validation")
     parser.add_argument("--json", action="store_true", help="emit only a JSON aggregate summary on success")
+    parser.add_argument("--real-only", action="store_true", help="reject synthetic records")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
@@ -246,6 +256,8 @@ def main(argv: list[str] | None = None) -> int:
         if isinstance(document, dict) and isinstance(document.get("records"), list):
             count += len(document["records"])
             records.extend(document["records"])
+    if not errors:
+        errors.extend(admission_errors(records, args, ceiling))
     if errors:
         for error in errors:
             print(error, file=sys.stderr)

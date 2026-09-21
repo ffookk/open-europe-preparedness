@@ -92,6 +92,13 @@ class RecordValidationTests(unittest.TestCase):
         self.record["id"] = "INVALID"
         self.assertEqual("", self.run_cli("--json")[1])
 
+    def test_real_only_gate_rejects_synthetic_without_summary(self):
+        code, output, error = self.run_cli("--real-only", "--json")
+        self.assertEqual((1, ""), (code, output))
+        self.assertIn("record-1: real records are required", error)
+        real = json.loads((ROOT / "data/verified.json").read_text())
+        self.assertEqual(0, self.run_cli("--real-only", documents=[real])[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
