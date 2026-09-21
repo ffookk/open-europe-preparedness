@@ -113,6 +113,13 @@ class RecordValidationTests(unittest.TestCase):
         self.record["verification_status"] = "inconclusive"
         self.assertEqual(1, self.run_cli("--require-verified")[0])
 
+    def test_require_source_locators_gate(self):
+        self.assertEqual(0, self.run_cli("--require-source-locators")[0])
+        self.record["verification_status"] = "inconclusive"
+        self.record["sources"][0]["locator"] = None
+        self.assertEqual(0, self.run_cli()[0])
+        self.assertEqual(1, self.run_cli("--require-source-locators")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
