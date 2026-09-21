@@ -38,6 +38,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--real-only` rejects synthetic records. Optional gate errors use `record-N`, numbered across the combined input order, without echoing IDs.
 
+- `--require-reviewed` enforces the recorded status: pending records are rejected; other reviewed outcomes remain allowed. It does not certify human review.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
