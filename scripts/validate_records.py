@@ -258,7 +258,7 @@ def parse_as_of(value: str) -> dt.date:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("files", type=Path, nargs="+", help="JSON record files; IDs are checked across all files")
+    parser.add_argument("files", type=Path, nargs="+", help="JSON record files or one - for stdin; IDs are checked across all inputs")
     parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",
                         help="inclusive ceiling for review and source access dates (default: current UTC date)")
     parser.add_argument("--summary", action="store_true", help="append safe aggregate counts after successful validation")
@@ -278,6 +278,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--min-records", type=parse_count, default=0, metavar="N", help="minimum combined record count")
     parser.add_argument("--quiet", action="store_true", help="suppress the default PASS banner; requested summaries remain visible")
     args = parser.parse_args(argv)
+    if args.files.count(Path("-")) > 1:
+        parser.error("standard input may be used only once")
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
     errors = []
@@ -287,7 +289,9 @@ def main(argv: list[str] | None = None) -> int:
         # Even filenames can contain private information; print only input ordinals.
         label = f"input-{input_index}"
         try:
-            document = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys,
+            if path == Path("-") and sys.stdin is None:
+                raise ValueError("standard input is unavailable")
+            document = json.loads(sys.stdin.read() if path == Path("-") else path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys,
                                   parse_constant=lambda _: (_ for _ in ()).throw(ValueError("non-finite JSON number")))
         except (OSError, UnicodeError, ValueError) as exc:
             detail = f"invalid JSON at line {exc.lineno}, column {exc.colno}" if isinstance(exc, json.JSONDecodeError) else "cannot read valid UTF-8 JSON (check file access, duplicate keys, and syntax)"

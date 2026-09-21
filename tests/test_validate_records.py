@@ -192,6 +192,24 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual((1, ""), (code, output))
         self.assertTrue(error)
 
+    def test_stdin_success_bad_json_and_repeated_operands(self):
+        for content, code in [(json.dumps(self.document), 0), ("{synthetic-private-marker", 1)]:
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with mock.patch("sys.stdin", io.StringIO(content)), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                self.assertEqual(code, main(["-"]))
+            self.assertNotIn("synthetic-private-marker", stdout.getvalue() + stderr.getvalue())
+        stream = mock.Mock()
+        with mock.patch("sys.stdin", stream), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            main(["-", "-"])
+        stream.read.assert_not_called()
+
+    def test_unavailable_stdin_returns_a_fixed_diagnostic(self):
+        error = io.StringIO()
+        with mock.patch("sys.stdin", None), contextlib.redirect_stderr(error):
+            self.assertEqual(1, main(["-"]))
+        self.assertIn("input-1:", error.getvalue())
+        self.assertNotIn("Traceback", error.getvalue())
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
