@@ -14,6 +14,10 @@ Dates equal to the cutoff pass the ceiling check; later dates fail it. The optio
 
 The cutoff does not rewrite records, fetch sources, establish policy truth at that date, or require target dates to have passed. Source access dates must still be no later than their record's `last_verified_at`. Python callers can supply the same ceiling with `validate_document(document, as_of=datetime.date(2026, 9, 20))`; existing calls default to the current UTC day.
 
+## Optional reports and admission gates
+
+- `--summary` appends fixed aggregate counts only after all inputs pass. It never includes record IDs, source URLs, paths or user text; counts do not establish factual verification.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
