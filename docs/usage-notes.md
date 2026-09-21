@@ -2,6 +2,18 @@
 
 The CLI only reads input files and reports validation results. It does not rewrite JSON or automatically correct records.
 
+## Reproduce a date cutoff
+
+Use `--as-of YYYY-MM-DD` to apply one inclusive date ceiling to `last_verified_at` and every source's `accessed_at` across all input files:
+
+```sh
+python3 scripts/validate_records.py --as-of 2026-09-20 data/verified.json data/pending.json examples/synthetic.json
+```
+
+Dates equal to the cutoff pass the ceiling check; later dates fail it. The option requires an exact calendar date, including a two-digit month and day. Invalid values produce a fixed diagnostic and exit code `2` without echoing the supplied value. If omitted, the CLI captures the current UTC date once for the entire command.
+
+The cutoff does not rewrite records, fetch sources, establish policy truth at that date, or require target dates to have passed. Source access dates must still be no later than their record's `last_verified_at`. Python callers can supply the same ceiling with `validate_document(document, as_of=datetime.date(2026, 9, 20))`; existing calls default to the current UTC day.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
@@ -12,5 +24,5 @@ The CLI only reads input files and reports validation results. It does not rewri
 - Success summaries go to standard output; data diagnostics go to standard error. Capture more than standard output when collecting failure details.
 - `input-2.records[0]` means the first record in the second command-line input. Input numbers start at 1; array indexes start at 0.
 - JSON syntax errors include line and column numbers. Duplicate keys, encoding failures and file-read errors use generic messages that omit raw values.
-- Whether an access or review date is in the future is determined using the machine's current UTC date. Keep that boundary in mind when entering dates across time zones.
+- Whether an access or review date is in the future is determined against `--as-of`, or the current UTC date when it is omitted. Keep the UTC boundary in mind when entering dates across time zones.
 - The record count in a `PASS` summary includes real, pending and synthetic records from every input. It is not a count of verified policies.
