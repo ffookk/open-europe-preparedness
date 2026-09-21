@@ -71,6 +71,7 @@ SCRIPT = r"""
       const record=row.after||row.before;
       if(view==="queue"&&!row.reasons.length)return false;
       if(el("change-filter").value&&row.change!==el("change-filter").value)return false;
+      if(el("stage-filter").value&&record.policy_stage!==el("stage-filter").value)return false;
       if(el("topic-filter").value&&record.topic!==el("topic-filter").value)return false;
       if(el("jurisdiction").value&&record.jurisdiction!==el("jurisdiction").value)return false;
       if(el("record-type").value&&record.record_type!==el("record-type").value)return false;
@@ -106,6 +107,7 @@ SCRIPT = r"""
     const queue=new Map(report.review_queue.entries.map(entry=>[entry.id,entry.reasons]));
     rows=(report.changes||after.dataset.records.map(r=>({id:r.id,change:"current",field_changes:[],policy_stage_changed:false,verification_status_changed:false}))).map(change=>({...change,before:old.get(change.id)||null,after:current.get(change.id)||null,reasons:queue.get(change.id)||[]}));
     options("change-filter",rows.map(r=>r.change));options("jurisdiction",rows.map(r=>(r.after||r.before).jurisdiction));options("record-type",rows.map(r=>(r.after||r.before).record_type));
+    options("stage-filter",rows.map(r=>(r.after||r.before).policy_stage));
     options("topic-filter",rows.map(r=>(r.after||r.before).topic));
     options("status-filter",rows.map(r=>(r.after||r.before).verification_status));options("reason-filter",Object.keys(report.review_queue.reason_counts));
     el("context").textContent="Review cutoff: "+report.review_queue.as_of+" · Maximum review age: "+report.review_queue.max_review_age+" days · Maximum source-access age: "+report.review_queue.max_source_age+" days";
@@ -142,6 +144,7 @@ def render_report(report: dict) -> str:
 <body><header><div class="kicker">Open Europe Preparedness · Offline maintenance</div><h1>Review what changed.<br>Keep the evidence intact.</h1><p>Compare complete catalog snapshots and prepare human-reviewed corrections using explicit structural triage reasons.</p><p id="context" class="cutoff"></p></header>
 <main><section class="panel filters" aria-label="Maintenance filters"><h2>Focus the review</h2><div id="filters"><label for="search">Search records, evidence and changes</label><input id="search" type="search" maxlength="1000" autocomplete="off" placeholder="Claim, source, field or reason">
 <div class="filter-grid">
+<div><label for="stage-filter">Policy stage</label><select id="stage-filter"><option value="">All stages</option></select></div>
 <div><label for="topic-filter">Topic</label><select id="topic-filter"><option value="">All topics</option></select></div>
 <div id="change-controls"><label for="change-filter">Snapshot change</label><select id="change-filter"><option value="">All changes</option></select></div><div><label for="jurisdiction">Jurisdiction</label><select id="jurisdiction"><option value="">All</option></select></div><div><label for="record-type">Record type</label><select id="record-type"><option value="">All</option></select></div><div><label for="status-filter">Record review status</label><select id="status-filter"><option value="">All</option></select></div><div><label for="reason-filter">Structural triage reason</label><select id="reason-filter"><option value="">All reasons</option></select></div><div id="transition-controls"><label for="transition-filter">Independent field transitions</label><select id="transition-filter"><option value="">All</option><option value="policy_stage_changed">Policy stage changed</option><option value="verification_status_changed">Review status changed</option></select></div></div></div>
 <label for="sort">Order records</label><select id="sort"><option value="id">Record ID</option><option value="title">Title</option><option value="change">Snapshot change</option><option value="reasons">Most triage reasons</option></select><p class="small">Filters use the after/current record, or the before record when absent after. Reason counts are overlapping flags, not severity scores.</p><button id="reset" class="secondary" type="button">Reset filters</button></section>
