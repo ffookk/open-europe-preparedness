@@ -194,6 +194,8 @@ def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.
     errors = []
     for index, record in enumerate(records):
         label = f"record-{index + 1}"
+        if args.require_verified and record["verification_status"] != "verified":
+            errors.append(f"{label}: verified records are required")
         if args.require_reviewed and record["verification_status"] == "pending":
             errors.append(f"{label}: completed evidence review is required")
         if args.real_only and record["record_type"] != "real":
@@ -239,6 +241,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="emit only a JSON aggregate summary on success")
     parser.add_argument("--real-only", action="store_true", help="reject synthetic records")
     parser.add_argument("--require-reviewed", action="store_true", help="completed evidence review is required")
+    parser.add_argument("--require-verified", action="store_true", help="verified records are required")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
