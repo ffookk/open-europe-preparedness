@@ -55,6 +55,13 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(1, report["topics"]["household_preparedness"])
         self.assertEqual(1, sum(report["topics"].values()))
 
+    def test_summary_source_coverage_is_counted_without_values(self):
+        self.record["sources"][0]["supports"] = "synthetic-private-support-marker"
+        output = self.run_cli("--summary")[1]
+        report = json.loads(output.split("SUMMARY: ")[1])
+        self.assertEqual({"total": 1, "accessed_at": 1, "locator": 1, "supports": 1}, report["sources"])
+        self.assertNotIn("synthetic-private-support-marker", output)
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
