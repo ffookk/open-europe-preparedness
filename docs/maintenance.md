@@ -120,3 +120,4 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 - **Review date:** select known or missing last-review dates without inferring age, correctness or certification.
 - **Source publisher:** match any source entry with the selected stored publisher label; this is not publisher authentication.
 - **Source entries:** distinguish one from multiple stored entries; repeated entries are still counted and quantity does not establish independence or quality.
+- **Policy dates changed:** isolate changed records with `/dates` or descendant changes; additions and removals are presence changes, not date transitions.
