@@ -260,6 +260,12 @@ class RecordValidationTests(unittest.TestCase):
         self.assertNotIn("Traceback", error.getvalue())
         self.assertNotIn(content, error.getvalue())
 
+    def test_python_cutoff_type_errors_are_fixed(self):
+        for value in ["synthetic-private-date", 0, dt.datetime(2024, 1, 1)]:
+            with self.subTest(kind=type(value).__name__):
+                self.assertEqual(["validation cutoff: as_of must be a date object or None"], validate_document(self.document, as_of=value))
+        self.assertEqual([], validate_document(self.document, as_of=dt.date(2024, 1, 3)))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

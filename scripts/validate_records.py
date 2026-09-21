@@ -32,6 +32,8 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
     access dates only; it does not establish historical policy truth.
     """
     errors: list[str] = []
+    if as_of is not None and type(as_of) is not dt.date:
+        return ["validation cutoff: as_of must be a date object or None"]
     seen = set() if seen is None else seen
     ceiling = dt.datetime.now(dt.timezone.utc).date() if as_of is None else as_of
 
