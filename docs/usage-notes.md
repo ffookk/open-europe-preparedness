@@ -48,6 +48,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--require-publication-dates` requires every source to have a non-null `published_at` value, without filling missing metadata automatically.
 
+- `--require-source-support` requires every source to have a non-null `supports` value, without filling missing metadata automatically.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
