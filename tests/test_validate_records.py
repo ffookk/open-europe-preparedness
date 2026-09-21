@@ -75,6 +75,11 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(2, json.loads(output.split("SUMMARY: ")[1])["jurisdictions"])
         self.assertNotIn("synthetic-private-jurisdiction", output)
 
+    def test_summary_policy_date_coverage_keeps_unknowns_distinct(self):
+        report = json.loads(self.run_cli("--summary")[1].split("SUMMARY: ")[1])
+        self.assertEqual(1, report["policy_dates"]["announced_at"])
+        self.assertEqual(0, report["policy_dates"]["effective_at"])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
