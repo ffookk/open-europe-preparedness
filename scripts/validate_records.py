@@ -292,6 +292,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--min-records", type=parse_count, default=0, metavar="N", help="minimum combined record count")
     parser.add_argument("--quiet", action="store_true", help="suppress the default PASS banner; requested summaries remain visible")
     parser.add_argument("--max-input-bytes", type=parse_count, metavar="N", help="maximum UTF-8 bytes per input")
+    parser.add_argument("--max-errors", type=parse_count, metavar="N", help="limit displayed error details without skipping validation")
     args = parser.parse_args(argv)
     if args.files.count(Path("-")) > 1:
         parser.error("standard input may be used only once")
@@ -321,8 +322,10 @@ def main(argv: list[str] | None = None) -> int:
         if len(records) < args.min_records:
             errors.append("batch: record count is below the required minimum")
     if errors:
-        for error in errors:
+        for error in errors if args.max_errors is None else errors[:args.max_errors]:
             print(error, file=sys.stderr)
+        if args.max_errors is not None and len(errors) > args.max_errors:
+            print(f"FAIL: {len(errors) - args.max_errors} additional validation errors omitted.", file=sys.stderr)
         return 1
     if args.json:
         print(json.dumps(summarize(records), sort_keys=True))
