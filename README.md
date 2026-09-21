@@ -8,7 +8,7 @@ This project aims to organize public defence, civil protection and emergency pre
 
 The first policy-record JSON Schema, [field and evidence review rules](docs/record-format.md), Python standard-library validation CLI and regression tests are implemented. Policy stages and verification results are stored separately. Checks cover dates, unique IDs across files, evidence locators and required fields for reviewed records.
 
-**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. A website and query tools are not yet implemented. The synthetic example uses `verified` only to demonstrate complete fields.
+**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. An offline catalog query engine is implemented; a hosted website is not available. The synthetic example uses `verified` only to demonstrate complete fields.
 
 ## Run locally
 
@@ -33,6 +33,17 @@ For repeatable date checks, add `--as-of YYYY-MM-DD` to set one inclusive ceilin
 | 1 entirely fictional complete example | [`examples/synthetic.json`](examples/synthetic.json) |
 | Standard-library validation command | [`scripts/validate_records.py`](scripts/validate_records.py) |
 | CLI usage details | [CLI usage notes](docs/usage-notes.md) |
+
+## Query the offline catalog
+
+The catalog validates all inputs together before returning any records. It supports combined filters, inclusive date ranges, reproducible review-age checks, deterministic sorting, pagination and counts by category. Every result retains the original sources, limitations and review notes. Results contain selected record text; inspect inputs before sharing or redirecting output.
+
+```sh
+python3 -m scripts.catalog query data/verified.json data/pending.json --as-of 2026-09-20 --topic household_preparedness --sort title
+python3 -m scripts.catalog query data/verified.json --as-of 2026-09-20 --max-review-age 0 --dataset
+```
+
+Read the [catalog guide](docs/catalog.md) for filter semantics, schema exports and limits. This tool performs no source research and cannot promote a proposal into law or an agent review into human certification.
 
 ## Project goals
 

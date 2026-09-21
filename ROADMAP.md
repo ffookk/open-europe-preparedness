@@ -1,6 +1,6 @@
 # Roadmap
 
-The first data format and local validation tools are implemented. The first **3 real records have received AI agent review against official sources; 0 have completed human review**. There are also 2 pending leads and 1 synthetic example. Agent-reviewed records require independent human review before counting toward the phase-one target of 10 human-reviewed records. The index remains unimplemented.
+The first data format and local validation tools are implemented. The first **3 real records have received AI agent review against official sources; 0 have completed human review**. There are also 2 pending leads and 1 synthetic example. Agent-reviewed records require independent human review before counting toward the phase-one target of 10 human-reviewed records. An offline CLI index with filtering, facets and schema exports is implemented.
 
 ## PR 1: Policy-record format and review rules
 
@@ -27,7 +27,7 @@ Acceptance: 10 real policy records have been reviewed by humans and can be check
 
 - [x] Use the Python standard library to check required fields, duplicate IDs across files, real calendar dates, evidence locations and consistency of review dates.
 - [x] Cover reviewed proposals, pending leads, missing evidence, invalid dates, synthetic-source misuse and CLI input errors with regression tests.
-- [ ] Produce an index filterable by country, topic and policy status.
+- [x] Produce an offline CLI index filterable by jurisdiction, topic, policy stage and evidence review status, with date filters, facets and schema exports.
 - [ ] Consider a website or other tools once the data and review process are stable.
 
-Acceptance: others can validate the same data using the README commands. Once implemented, the index should also be reproducible and show each conclusion's evidence and applicable period. Passing automated checks establishes only compliance with structural rules.
+Acceptance: others can validate the same data using the README commands. The offline CLI index is reproducible and preserves each conclusion's evidence and applicable period. Passing automated checks establishes only compliance with structural rules.
