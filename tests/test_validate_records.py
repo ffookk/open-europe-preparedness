@@ -244,6 +244,13 @@ class RecordValidationTests(unittest.TestCase):
         self.assertIn("1 additional validation errors omitted", error)
         self.assertEqual(1, len(self.run_cli("--max-errors", "0")[2].splitlines()))
 
+    def test_python_api_unknown_key_types_do_not_crash_or_echo(self):
+        self.document[1] = "synthetic-private-value"
+        self.document["synthetic-private-key"] = None
+        errors = validate_document(self.document)
+        self.assertEqual(2, len(errors))
+        self.assertNotIn("synthetic-private", "\n".join(errors))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
