@@ -24,10 +24,16 @@ TOPICS = {"reserve_service", "treaty_status", "civil_protection", "household_pre
 SYNTHETIC_HOSTS = {"example.org", "example.invalid"}
 
 
-def validate_document(document: object, label: str = "document", seen: set[str] | None = None) -> list[str]:
-    """Return all structural errors. Share `seen` to enforce IDs across files."""
+def validate_document(document: object, label: str = "document", seen: set[str] | None = None,
+                      *, as_of: dt.date | None = None) -> list[str]:
+    """Return structural errors, using one inclusive UTC-day or supplied date ceiling.
+
+    Share `seen` to enforce IDs across files. `as_of` affects review and source
+    access dates only; it does not establish historical policy truth.
+    """
     errors: list[str] = []
     seen = set() if seen is None else seen
+    ceiling = dt.datetime.now(dt.timezone.utc).date() if as_of is None else as_of
 
     def error(path: str, message: str) -> None:
         errors.append(f"{path}: {message}")
@@ -101,8 +107,8 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
                 error(p + ".last_verified_at", "pending records must use null")
         elif isinstance(status, str) and status in STATUSES and last is None:
             error(p + ".last_verified_at", "reviewed records require a valid review date")
-        if last and last > dt.datetime.now(dt.timezone.utc).date():
-            error(p + ".last_verified_at", "review date cannot be in the future")
+        if last and last > ceiling:
+            error(p + ".last_verified_at", "review date cannot be in the future relative to the validation date")
         dates = record.get("dates")
         if keys(dates, DATE_KEYS, p + ".dates"):
             for field in sorted(DATE_KEYS):
@@ -121,8 +127,8 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
                     string(source.get(field), s + "." + field, nullable=status != "verified")
                 date(source.get("published_at"), s + ".published_at")
                 accessed = date(source.get("accessed_at"), s + ".accessed_at", nullable=status != "verified")
-                if accessed and accessed > dt.datetime.now(dt.timezone.utc).date():
-                    error(s + ".accessed_at", "access date cannot be in the future")
+                if accessed and accessed > ceiling:
+                    error(s + ".accessed_at", "access date cannot be in the future relative to the validation date")
                 if accessed and last and accessed > last:
                     error(s + ".accessed_at", "cannot be later than last_verified_at")
                 url = source.get("url")
@@ -184,10 +190,24 @@ def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
     return result
 
 
+def parse_as_of(value: str) -> dt.date:
+    """Parse a strict ISO date without including supplied content in errors."""
+    message = "must be a valid calendar date in YYYY-MM-DD format"
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        raise argparse.ArgumentTypeError(message)
+    try:
+        return dt.date.fromisoformat(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(message) from None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("files", type=Path, nargs="+", help="JSON record files; IDs are checked across all files")
+    parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",
+                        help="inclusive ceiling for review and source access dates (default: current UTC date)")
     args = parser.parse_args(argv)
+    ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
     errors = []
     count = 0
@@ -201,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
             detail = f"invalid JSON at line {exc.lineno}, column {exc.colno}" if isinstance(exc, json.JSONDecodeError) else "cannot read valid UTF-8 JSON (check file access, duplicate keys, and syntax)"
             errors.append(f"{label}: {detail}")
             continue
-        errors.extend(validate_document(document, label, seen))
+        errors.extend(validate_document(document, label, seen, as_of=ceiling))
         if isinstance(document, dict) and isinstance(document.get("records"), list):
             count += len(document["records"])
     if errors:

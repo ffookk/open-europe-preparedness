@@ -21,6 +21,8 @@ python3 -m unittest discover -s tests -v
 
 The CLI accepts one or more JSON files and checks for duplicate IDs across all inputs. Run `python3 scripts/validate_records.py --help` for argument help. Exit code `0` means success (help displayed or structural checks passed), `1` means a data or file error, and `2` means a command-line argument error. **Passing checks does not establish that policy facts are verified.** Factual verification still requires reading original sources, locating evidence and obtaining human PR review.
 
+For repeatable date checks, add `--as-of YYYY-MM-DD` to set one inclusive ceiling for all review and source-access dates. Without it, the command uses the current UTC date. See the [cutoff example and limits](docs/usage-notes.md#reproduce-a-date-cutoff).
+
 | Content | Location |
 |---|---|
 | Machine-readable data structure | [`schema/policy-records.schema.json`](schema/policy-records.schema.json) |

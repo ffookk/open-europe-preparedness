@@ -1,11 +1,13 @@
 """Regression cases for realistic record editing mistakes and CLI failure modes."""
 import contextlib
 import copy
+import datetime as dt
 import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts.validate_records import main, validate_document
 
@@ -71,6 +73,91 @@ class RecordValidationTests(unittest.TestCase):
         self.assertTrue(any('later than last_verified_at' in e for e in validate_document(self.document)))
         self.record['last_verified_at'] = '9999-12-31'
         self.assertTrue(any('cannot be in the future' in e for e in validate_document(self.document)))
+
+    def test_as_of_ceiling_is_inclusive_for_review_and_access_dates(self):
+        ceiling = dt.date(2024, 2, 29)
+        for value, rejected in [('2024-02-28', False), ('2024-02-29', False), ('2024-03-01', True)]:
+            with self.subTest(date=value):
+                self.record['last_verified_at'] = value
+                self.record['sources'][0]['accessed_at'] = value
+                with mock.patch('scripts.validate_records.dt.datetime') as clock:
+                    errors = validate_document(self.document, as_of=ceiling)
+                    clock.now.assert_not_called()
+                if rejected:
+                    self.assertEqual(2, len(errors))
+                    self.assertTrue(any('.last_verified_at:' in error for error in errors))
+                    self.assertTrue(any('.sources[0].accessed_at:' in error for error in errors))
+                else:
+                    self.assertEqual([], errors)
+
+    def test_default_date_uses_current_utc_day_once(self):
+        current = dt.datetime(2024, 2, 29, 23, 59, tzinfo=dt.timezone.utc)
+        for value, rejected in [('2024-02-29', False), ('2024-03-01', True)]:
+            with self.subTest(date=value):
+                self.record['last_verified_at'] = value
+                self.record['sources'][0]['accessed_at'] = value
+                with mock.patch('scripts.validate_records.dt.datetime') as clock:
+                    clock.now.return_value = current
+                    errors = validate_document(self.document)
+                    clock.now.assert_called_once_with(dt.timezone.utc)
+                self.assertEqual(rejected, bool(errors))
+
+    def test_as_of_does_not_replace_source_chronology_or_policy_dates(self):
+        self.record['last_verified_at'] = '2024-02-28'
+        self.record['sources'][0]['accessed_at'] = '2024-02-29'
+        self.record['dates']['target_at'] = '2025-01-01'
+        errors = validate_document(self.document, as_of=dt.date(2024, 2, 29))
+        self.assertEqual(1, len(errors))
+        self.assertIn('cannot be later than last_verified_at', errors[0])
+
+    def test_cli_uses_one_date_ceiling_across_all_files(self):
+        current = dt.datetime(2024, 2, 29, 23, 59, tzinfo=dt.timezone.utc)
+        later = current + dt.timedelta(days=1)
+        with tempfile.TemporaryDirectory() as directory:
+            paths = []
+            for index, value in enumerate(['2024-02-29', '2024-03-01']):
+                document = copy.deepcopy(self.document)
+                record = document['records'][0]
+                record['id'] = f'synthetic-cutoff-{index}'
+                record['last_verified_at'] = value
+                record['sources'][0]['accessed_at'] = value
+                path = Path(directory) / f'synthetic-private-marker-{index}.json'
+                path.write_text(json.dumps(document), encoding='utf-8')
+                paths.append(str(path))
+            for options in [[], ['--as-of', '2024-02-29']]:
+                with self.subTest(options=options):
+                    stderr = io.StringIO()
+                    with mock.patch('scripts.validate_records.dt.datetime') as clock, contextlib.redirect_stderr(stderr):
+                        clock.now.side_effect = [current, later]
+                        self.assertEqual(1, main(options + paths))
+                        if options:
+                            clock.now.assert_not_called()
+                        else:
+                            clock.now.assert_called_once_with(dt.timezone.utc)
+                    self.assertNotIn('input-1', stderr.getvalue())
+                    self.assertEqual(2, stderr.getvalue().count('input-2'))
+                    self.assertNotIn(directory, stderr.getvalue())
+                    self.assertNotIn('synthetic-private-marker', stderr.getvalue())
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, main(['--as-of', '2024-03-01'] + paths))
+
+    def test_cli_rejects_invalid_as_of_without_echoing_supplied_values(self):
+        invalid_dates = ['2023-02-29', '2024-13-01', '0000-01-01', '20240229',
+                         '2024-W09-4', '2024-2-29', '2024-02-29T00:00:00Z',
+                         'synthetic-private-date-marker']
+        with tempfile.TemporaryDirectory() as directory:
+            private_input = str(Path(directory) / 'synthetic-private-input-marker.json')
+            invalid_dates.append(private_input)
+            for value in invalid_dates:
+                with self.subTest(value=value):
+                    stdout, stderr = io.StringIO(), io.StringIO()
+                    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                        with self.assertRaises(SystemExit) as raised:
+                            main(['--as-of=' + value, private_input])
+                    self.assertEqual(2, raised.exception.code)
+                    self.assertIn('must be a valid calendar date in YYYY-MM-DD format', stderr.getvalue())
+                    self.assertNotIn(value, stdout.getvalue() + stderr.getvalue())
+                    self.assertNotIn(private_input, stdout.getvalue() + stderr.getvalue())
 
     def test_synthetic_records_cannot_be_mistaken_for_real_evidence(self):
         self.record['sources'][0]['url'] = 'https://commission.europa.eu/topics/preparedness_en'
