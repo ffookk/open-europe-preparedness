@@ -8,7 +8,7 @@ This project aims to organize public defence, civil protection and emergency pre
 
 The first policy-record JSON Schema, [field and evidence review rules](docs/record-format.md), Python standard-library validation CLI and regression tests are implemented. Policy stages and verification results are stored separately. Checks cover dates, unique IDs across files, evidence locators and required fields for reviewed records.
 
-**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. An offline catalog query engine is implemented; a hosted website is not available. The synthetic example uses `verified` only to demonstrate complete fields.
+**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. An offline catalog query engine and a self-contained HTML explorer are implemented; a hosted website is not available. The synthetic example uses `verified` only to demonstrate complete fields.
 
 ## Run locally
 
@@ -44,6 +44,16 @@ python3 -m scripts.catalog query data/verified.json --as-of 2026-09-20 --max-rev
 ```
 
 Read the [catalog guide](docs/catalog.md) for filter semantics, schema exports and limits. This tool performs no source research and cannot promote a proposal into law or an agent review into human certification.
+
+## Open the offline explorer
+
+```sh
+python3 -m scripts.catalog html data/verified.json data/pending.json examples/synthetic.json --as-of 2026-09-20
+```
+
+Open `private-output/policy-catalog.html` locally to search and filter records, inspect evidence and unknown dates, see category counts, print the current page, or download all filtered records as a schema dataset. The page uses no network resources, browser storage or telemetry. Its cutoff is fixed when generated. Source URLs are shown as text.
+
+The generator creates a new file with private permissions, refuses existing destinations and symbolic links, and defaults to the ignored `private-output/` directory. Use `--output` with a new filename to generate another version. The HTML embeds full input records, even when the visible list is filtered; review it before sharing. Read the [offline explorer guide](docs/catalog.md#offline-html-explorer) for behavior and limits.
 
 ## Project goals
 

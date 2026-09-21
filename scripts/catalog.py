@@ -234,12 +234,22 @@ def build_parser() -> argparse.ArgumentParser:
     query.add_argument("--offset", type=parse_number, default=0)
     query.add_argument("--limit", type=parse_number, default=25)
     query.add_argument("--dataset", action="store_true", help="Export this page as a complete schema dataset, preserving provenance.")
+    explorer = commands.add_parser("html", help="Create a self-contained offline explorer with full record text.")
+    explorer.add_argument("files", nargs="+")
+    explorer.add_argument("--as-of", type=parse_date, help="One validation and review-age cutoff; defaults to the UTC day.")
+    explorer.add_argument("--output", default="private-output/policy-catalog.html", help="New file only; existing files and symbolic links are refused.")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     try:
         args = build_parser().parse_args(argv)
+        if args.command == "html":
+            from .catalog_html import write_html
+            catalog = load_catalog(args.files, as_of=args.as_of)
+            write_html(catalog, args.output)
+            print("Created offline catalog HTML. Open the requested output file locally.")
+            return 0
         query = Query(**{field: getattr(args, field) for field in Query.__dataclass_fields__})
         query.validate()
         catalog = load_catalog(args.files, as_of=args.as_of)
