@@ -119,3 +119,4 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 - **Policy stage:** filter stored stages independently of evidence review status; a stage does not establish evidence quality.
 - **Review date:** select known or missing last-review dates without inferring age, correctness or certification.
 - **Source publisher:** match any source entry with the selected stored publisher label; this is not publisher authentication.
+- **Source entries:** distinguish one from multiple stored entries; repeated entries are still counted and quantity does not establish independence or quality.
