@@ -32,6 +32,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `policy_dates` counts non-null values for each policy date field; it does not evaluate policy implementation.
 
+- `source_publication_dates` separates known and unknown citation publication dates; unknown dates remain null in the input.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
