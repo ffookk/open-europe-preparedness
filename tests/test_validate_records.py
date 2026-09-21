@@ -19,6 +19,27 @@ class RecordValidationTests(unittest.TestCase):
         self.document = json.loads((ROOT / 'examples/synthetic.json').read_text(encoding='utf-8'))
         self.record = self.document['records'][0]
 
+    def run_cli(self, *options, documents=None):
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with tempfile.TemporaryDirectory() as directory:
+            paths = []
+            for index, document in enumerate(documents or [self.document]):
+                path = Path(directory) / f"synthetic-input-{index}.json"
+                path.write_text(json.dumps(document), encoding="utf-8")
+                paths.append(str(path))
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                code = main([*options, *paths])
+        return code, stdout.getvalue(), stderr.getvalue()
+
+    def test_summary_counts_are_opt_in_and_success_only(self):
+        self.assertNotIn("SUMMARY", self.run_cli()[1])
+        code, output, _ = self.run_cli("--summary")
+        self.assertEqual(0, code)
+        self.assertIn('"synthetic": 1', output)
+        self.record["title"] = "synthetic-private-title-marker"
+        self.record["id"] = "INVALID"
+        self.assertNotIn("SUMMARY", self.run_cli("--summary")[1])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

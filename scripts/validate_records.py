@@ -190,6 +190,11 @@ def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
     return result
 
 
+def summarize(records: list[dict]) -> dict:
+    return {"records": len(records),
+            "record_types": {kind: sum(r["record_type"] == kind for r in records) for kind in ("real", "synthetic")}}
+
+
 def parse_as_of(value: str) -> dt.date:
     """Parse a strict ISO date without including supplied content in errors."""
     message = "must be a valid calendar date in YYYY-MM-DD format"
@@ -206,11 +211,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("files", type=Path, nargs="+", help="JSON record files; IDs are checked across all files")
     parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",
                         help="inclusive ceiling for review and source access dates (default: current UTC date)")
+    parser.add_argument("--summary", action="store_true", help="append safe aggregate counts after successful validation")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
     errors = []
     count = 0
+    records = []
     for input_index, path in enumerate(args.files, start=1):
         # Even filenames can contain private information; print only input ordinals.
         label = f"input-{input_index}"
@@ -224,11 +231,14 @@ def main(argv: list[str] | None = None) -> int:
         errors.extend(validate_document(document, label, seen, as_of=ceiling))
         if isinstance(document, dict) and isinstance(document.get("records"), list):
             count += len(document["records"])
+            records.extend(document["records"])
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
         return 1
     print(f"PASS: {count} structurally valid records in {len(args.files)} files. This is not factual verification.")
+    if args.summary:
+        print("SUMMARY: " + json.dumps(summarize(records), sort_keys=True))
     return 0
 
 
