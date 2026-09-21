@@ -32,3 +32,15 @@ Acceptance: 10 real policy records have been reviewed by humans and can be check
 - [ ] Consider a hosted website once the data and review process are stable.
 
 Acceptance: others can validate the same data using the README commands. The offline CLI index is reproducible and preserves each conclusion's evidence and applicable period. Passing automated checks establishes only compliance with structural rules.
+
+
+## Implemented: Offline catalog maintenance and change review
+
+- [x] Create deterministic, content-bound snapshots from validated complete collections with explicit cutoffs and preserved provenance.
+- [x] Revalidate complete embedded snapshots and recompute metadata, hashes, added/removed/changed/unchanged classifications and field-level changes on import.
+- [x] Keep policy-stage transitions independent from evidence verification-status transitions.
+- [x] Generate fixed-cutoff structural queues with independent pending, non-verified, missing-evidence and stale-date reasons.
+- [x] Generate a self-contained offline maintenance report with before/after evidence, filters, queue views and full or filtered JSON downloads.
+- [x] Preserve private no-clobber output, inert record rendering and restrictive hashed Content Security Policy.
+
+Acceptance: a contributor can snapshot local inputs, compare a proposed complete collection and prepare an evidence-preserving review packet without network access. Content hashes establish consistency only; removed records are not treated as repealed policies, and queue entries do not establish factual error. Source research, independent human review and the phase-one record target remain outstanding.

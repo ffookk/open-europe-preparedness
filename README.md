@@ -8,7 +8,7 @@ This project aims to organize public defence, civil protection and emergency pre
 
 The first policy-record JSON Schema, [field and evidence review rules](docs/record-format.md), Python standard-library validation CLI and regression tests are implemented. Policy stages and verification results are stored separately. Checks cover dates, unique IDs across files, evidence locators and required fields for reviewed records.
 
-**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. An offline catalog query engine and a self-contained HTML explorer are implemented; a hosted website is not available. The synthetic example uses `verified` only to demonstrate complete fields.
+**The current dataset contains 3 real records reviewed against original sources by an AI agent, 2 pending source leads and 1 synthetic format example.** On September 20, 2026, the agent read official EU sources covering adoption of a non-legislative strategy, a plan to develop 72-hour self-sufficiency guidelines and an official statement about existing rescEU energy-reserve deployments. `verified` means that the evidence supports the precise claim; **these 3 records have not received independent human review and do not constitute human certification**. The [source review log](docs/source-review.md) records the method, evidence locations and limits. An offline catalog query engine, a self-contained HTML explorer and a reproducible snapshot/change-review maintenance workflow are implemented; a hosted website is not available. The synthetic example uses `verified` only to demonstrate complete fields.
 
 ## Run locally
 
@@ -54,6 +54,17 @@ python3 -m scripts.catalog html data/verified.json data/pending.json examples/sy
 Open `private-output/policy-catalog.html` locally to search and filter records, inspect evidence and unknown dates, see category counts, print the current page, or download all filtered records as a schema dataset. The page uses no network resources, browser storage or telemetry. Its cutoff is fixed when generated. Source URLs are shown as text.
 
 The generator creates a new file with private permissions, refuses existing destinations and symbolic links, and defaults to the ignored `private-output/` directory. Use `--output` with a new filename to generate another version. The HTML embeds full input records, even when the visible list is filtered; review it before sharing. Read the [offline explorer guide](docs/catalog.md#offline-html-explorer) for behavior and limits.
+
+## Maintain snapshots and review proposed changes
+
+Create content-bound catalog snapshots, compare full before/after records, and build a structural review queue using fixed review/source-access age limits. An offline maintenance report preserves original evidence, separates policy-stage and verification-status changes, and exports full artifacts or filtered review packets for human-reviewed corrections.
+
+```sh
+python3 -m scripts.maintenance snapshot data/verified.json data/pending.json --as-of 2026-09-20 --output private-output/catalog-before.json
+python3 -m scripts.maintenance review private-output/catalog-before.json --as-of 2026-09-22 --output private-output/review-queue.json --html private-output/review-queue.html
+```
+
+Read the [complete maintenance workflow](docs/maintenance.md) for snapshot comparison, reason codes, offline reports and output limits. Hashes check consistency, not authenticity; removal means absence from a supplied snapshot, never repeal. No policy facts or review statuses are updated automatically.
 
 ## Project goals
 
