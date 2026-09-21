@@ -124,3 +124,4 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 - **Source evidence changed:** isolate `/sources` or descendant changes in records present in both snapshots, including positional list changes.
 - **Evidence limitations changed:** isolate changes under `/limitations` in records present in both snapshots without inferring that an uncertainty was resolved.
 - **Expand/collapse visible evidence:** open or close record details on the current page only; changing pages renders fresh cards.
+- **Matched change counts:** inspect added, removed, changed and unchanged totals before pagination; review-only reports show current records.
