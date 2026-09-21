@@ -46,6 +46,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--require-source-dates` requires every source to have a non-null `accessed_at` value, without filling missing metadata automatically.
 
+- `--require-publication-dates` requires every source to have a non-null `published_at` value, without filling missing metadata automatically.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

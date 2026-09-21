@@ -127,6 +127,13 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(0, self.run_cli()[0])
         self.assertEqual(1, self.run_cli("--require-source-dates")[0])
 
+    def test_require_publication_dates_gate(self):
+        self.assertEqual(0, self.run_cli("--require-publication-dates")[0])
+        self.record["verification_status"] = "inconclusive"
+        self.record["sources"][0]["published_at"] = None
+        self.assertEqual(0, self.run_cli()[0])
+        self.assertEqual(1, self.run_cli("--require-publication-dates")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
