@@ -99,6 +99,13 @@ class RecordValidationTests(unittest.TestCase):
         real = json.loads((ROOT / "data/verified.json").read_text())
         self.assertEqual(0, self.run_cli("--real-only", documents=[real])[0])
 
+    def test_require_reviewed_gate(self):
+        pending = json.loads((ROOT / "data/pending.json").read_text())
+        self.assertEqual(1, self.run_cli("--require-reviewed", documents=[pending])[0])
+        self.assertEqual(0, self.run_cli("--require-reviewed")[0])
+        self.record["verification_status"] = "inconclusive"
+        self.assertEqual(0, self.run_cli("--require-reviewed")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
