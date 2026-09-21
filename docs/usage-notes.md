@@ -58,6 +58,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--max-review-age DAYS` requires non-null `last_verified_at` dates no more than DAYS before the chosen cutoff. Equality passes; the original future-date restrictions still apply.
 
+- `--max-access-age DAYS` requires non-null `accessed_at` dates no more than DAYS before the chosen cutoff. Equality passes; the original future-date restrictions still apply.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
