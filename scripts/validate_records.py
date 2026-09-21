@@ -276,6 +276,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-review-age", type=parse_count, metavar="DAYS", help="maximum last_verified_at age; missing dates fail")
     parser.add_argument("--max-access-age", type=parse_count, metavar="DAYS", help="maximum accessed_at age; missing dates fail")
     parser.add_argument("--min-records", type=parse_count, default=0, metavar="N", help="minimum combined record count")
+    parser.add_argument("--quiet", action="store_true", help="suppress the default PASS banner; requested summaries remain visible")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
@@ -307,7 +308,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(summarize(records), sort_keys=True))
         return 0
-    print(f"PASS: {count} structurally valid records in {len(args.files)} files. This is not factual verification.")
+    if not args.quiet:
+        print(f"PASS: {count} structurally valid records in {len(args.files)} files. This is not factual verification.")
     if args.summary:
         print("SUMMARY: " + json.dumps(summarize(records), sort_keys=True))
     return 0

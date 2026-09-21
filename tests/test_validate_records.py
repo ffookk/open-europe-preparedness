@@ -184,6 +184,14 @@ class RecordValidationTests(unittest.TestCase):
         other["records"][0]["id"] = "synthetic-second"
         self.assertEqual(0, self.run_cli("--min-records", "2", documents=[self.document, other])[0])
 
+    def test_quiet_hides_only_the_default_success_banner(self):
+        self.assertEqual((0, "", ""), self.run_cli("--quiet"))
+        self.assertIn("SUMMARY", self.run_cli("--quiet", "--summary")[1])
+        self.record["id"] = "INVALID"
+        code, output, error = self.run_cli("--quiet")
+        self.assertEqual((1, ""), (code, output))
+        self.assertTrue(error)
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

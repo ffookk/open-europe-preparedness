@@ -62,6 +62,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--min-records N` sets a combined input-record floor. Pending and synthetic records still count unless another requested gate excludes them.
 
+- `--quiet` suppresses only the normal PASS banner. Requested summaries and validation errors remain visible.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
