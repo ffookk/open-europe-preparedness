@@ -54,6 +54,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--min-source-domains N` counts distinct normalized hostnames per record, not documents or independently controlled organizations.
 
+- `--unique-sources` rejects duplicate exact URL strings within a record. URL aliases are not deduplicated; reuse across different records remains allowed.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
