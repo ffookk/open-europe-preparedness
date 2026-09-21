@@ -74,6 +74,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - Python API callers receive generic schema errors for unknown keys even if their in-memory dictionary uses mixed key types.
 
+- Excessively nested JSON produces the same value-free input failure instead of an uncaught decoder recursion traceback.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

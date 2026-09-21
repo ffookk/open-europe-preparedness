@@ -309,7 +309,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError("standard input is unavailable")
             document = json.loads(read_input(path, args.max_input_bytes), object_pairs_hook=reject_duplicate_keys,
                                   parse_constant=lambda _: (_ for _ in ()).throw(ValueError("non-finite JSON number")))
-        except (OSError, UnicodeError, ValueError) as exc:
+        except (OSError, UnicodeError, ValueError, RecursionError) as exc:
             detail = f"invalid JSON at line {exc.lineno}, column {exc.colno}" if isinstance(exc, json.JSONDecodeError) else "cannot read valid UTF-8 JSON (check file access, duplicate keys, syntax, and any byte limit)"
             errors.append(f"{label}: {detail}")
             continue
