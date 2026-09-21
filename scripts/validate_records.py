@@ -136,6 +136,8 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
                 url = source.get("url")
                 if isinstance(url, str):
                     try:
+                        if any(ord(char) < 32 or ord(char) == 127 for char in url):
+                            raise ValueError("source URL contains control characters")
                         parsed = urlsplit(url)
                         host = parsed.hostname
                         # DNS absolute names may end in a dot; classify the canonical host.

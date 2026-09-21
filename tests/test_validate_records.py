@@ -266,6 +266,13 @@ class RecordValidationTests(unittest.TestCase):
                 self.assertEqual(["validation cutoff: as_of must be a date object or None"], validate_document(self.document, as_of=value))
         self.assertEqual([], validate_document(self.document, as_of=dt.date(2024, 1, 3)))
 
+    def test_source_url_control_characters_are_rejected(self):
+        for codepoint in [0, 9, 10, 31, 127]:
+            self.record["sources"][0]["url"] = "https://example.invalid/a" + chr(codepoint) + "synthetic-private-url"
+            errors = validate_document(self.document)
+            self.assertTrue(any(".url:" in error for error in errors))
+            self.assertNotIn("synthetic-private-url", "\n".join(errors))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
