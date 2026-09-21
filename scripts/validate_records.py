@@ -194,6 +194,8 @@ def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.
     errors = []
     for index, record in enumerate(records):
         label = f"record-{index + 1}"
+        if len(source_domains(record)) < args.min_source_domains:
+            errors.append(f"{label}: source-domain count is below the required minimum")
         if len(record["sources"]) < args.min_sources:
             errors.append(f"{label}: source count is below the required minimum")
         if args.require_source_support and any(source["supports"] is None for source in record["sources"]):
@@ -263,6 +265,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--require-publication-dates", action="store_true", help="require every source published_at value")
     parser.add_argument("--require-source-support", action="store_true", help="require every source supports value")
     parser.add_argument("--min-sources", type=parse_count, default=0, metavar="N", help="minimum citations per record")
+    parser.add_argument("--min-source-domains", type=parse_count, default=0, metavar="N", help="minimum distinct source hostnames per record")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
