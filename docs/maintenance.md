@@ -125,3 +125,4 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 - **Evidence limitations changed:** isolate changes under `/limitations` in records present in both snapshots without inferring that an uncertainty was resolved.
 - **Expand/collapse visible evidence:** open or close record details on the current page only; changing pages renders fresh cards.
 - **Matched change counts:** inspect added, removed, changed and unchanged totals before pagination; review-only reports show current records.
+- **Download matched after/current records:** export complete matched current records across all pages as a schema dataset, excluding removals. The control is disabled when no current records match; this dataset is not a snapshot and carries no snapshot fingerprint.
