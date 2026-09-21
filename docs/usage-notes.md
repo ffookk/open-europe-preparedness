@@ -24,6 +24,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - The `topics` summary includes all schema categories, with zero for absent categories.
 
+- `sources` reports total citations and counts with access dates, locators and support notes, without printing their contents.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
