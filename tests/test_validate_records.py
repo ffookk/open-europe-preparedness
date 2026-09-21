@@ -149,6 +149,12 @@ class RecordValidationTests(unittest.TestCase):
             main(["--min-sources=synthetic-private-number", "ignored.json"])
         self.assertNotIn("synthetic-private-number", stderr.getvalue())
 
+    def test_minimum_domains_counts_hosts_not_paths(self):
+        self.record["sources"].append({**self.record["sources"][0], "url": "https://example.invalid/other"})
+        self.assertEqual(1, self.run_cli("--min-source-domains", "2")[0])
+        self.record["sources"][1]["url"] = "https://example.org/other"
+        self.assertEqual(0, self.run_cli("--min-source-domains", "2")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

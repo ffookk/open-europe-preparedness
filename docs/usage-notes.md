@@ -52,6 +52,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--min-sources N` sets a citation floor per record. Numeric policy values must be non-negative ASCII integers of at most nine digits; counts alone do not establish source independence.
 
+- `--min-source-domains N` counts distinct normalized hostnames per record, not documents or independently controlled organizations.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
