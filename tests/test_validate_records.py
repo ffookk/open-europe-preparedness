@@ -155,6 +155,13 @@ class RecordValidationTests(unittest.TestCase):
         self.record["sources"][1]["url"] = "https://example.org/other"
         self.assertEqual(0, self.run_cli("--min-source-domains", "2")[0])
 
+    def test_unique_sources_is_an_optional_record_level_gate(self):
+        self.record["sources"].append(copy.deepcopy(self.record["sources"][0]))
+        self.assertEqual(0, self.run_cli()[0])
+        self.assertEqual(1, self.run_cli("--unique-sources")[0])
+        self.record["sources"].pop()
+        self.assertEqual(0, self.run_cli("--unique-sources")[0])
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
