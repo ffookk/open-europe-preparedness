@@ -45,3 +45,26 @@ result = catalog.query(Query(policy_stage=("announced",), max_review_age=0))
 ```
 
 The API returns defensive copies. `CatalogError` diagnostics are safe fixed text. Exit code 0 means success, 1 means input/query/output failure, and 2 means malformed command arguments. These outcomes establish structural conformance only.
+
+## Offline HTML explorer
+
+```sh
+python3 -m scripts.catalog html data/verified.json data/pending.json examples/synthetic.json \
+  --as-of 2026-09-20 --output private-output/policy-catalog.html
+```
+
+The generator validates the entire batch before writing a self-contained HTML document. Open it directly in a browser; no server, package installation or internet connection is needed. JavaScript runs locally to provide these controls:
+
+- Search all stored text; combine jurisdiction, topic, policy stage, review status and record type filters.
+- Choose the date field, inclusive date bounds or known/unknown dates, and a maximum review age. The fixed generation cutoff appears at the top and governs age calculations regardless of the browser clock. Date and age rules match the CLI; unknown dates cannot silently pass a range or age filter.
+- Sort by title, identity, category or date. ID ties stay ascending and unknown dates stay last in either direction. Change page size or move between result pages.
+- Expand each record for its exact claim, scope, review note, policy/review dates, sources, evidence locators, limitations and change history. Source URLs remain plain text so browsing the catalog cannot request them.
+- Open the category-count panel to inspect facets across all matches before pagination. Empty results offer a reset; invalid filter combinations show a fixed explanation and disable exports.
+- Download all matching records, across every page, as `catalog-filtered.json`. The download is a complete schema dataset with full original provenance. An empty result disables download. The HTML generator's no-clobber rules apply to its output file; the browser controls the download destination and naming.
+- Use **Print this page** to expand the currently displayed records before opening the browser's print dialog. Printing includes the current page only. Controls have labels and visible keyboard focus; record details can be opened with the keyboard.
+
+The explorer is an offline artifact, not a hosted website or an updated policy feed. Filters do not modify the underlying records, and nothing is retained between page loads. **The HTML contains every input record, including those hidden by filters.** JSON downloads contain every matching record, not just the visible page. Neither export is a privacy redaction tool; inspect content before sharing.
+
+The page loads no external fonts, scripts, styles or images and uses no network requests, storage or telemetry. A restrictive Content Security Policy authorizes only the fixed inline script and stylesheet by their hashes. Embedded JSON escapes HTML delimiters, and record values are rendered as text rather than executable markup. This protects record display but does not certify the source claims.
+
+HTML generation requires a POSIX filesystem (including macOS and Linux). The default destination is ignored `private-output/policy-catalog.html`; a new file receives mode `0600`, and newly created directories receive restrictive permissions. File creation is atomic and exclusive: existing files, hard links, symbolic-link destinations and symbolic-link parent directories are refused. Paths containing parent traversal are also refused. Use a new filename for each generated version; input files are never overwritten. On a rare cleanup failure the completed output may exist despite a failure status; the fixed diagnostic does not expose paths or record values.
