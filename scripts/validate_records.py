@@ -194,6 +194,8 @@ def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.
     errors = []
     for index, record in enumerate(records):
         label = f"record-{index + 1}"
+        if args.require_source_dates and any(source["accessed_at"] is None for source in record["sources"]):
+            errors.append(f"{label}: all source accessed_at values are required")
         if args.require_source_locators and any(source["locator"] is None for source in record["sources"]):
             errors.append(f"{label}: all source locator values are required")
         if args.require_verified and record["verification_status"] != "verified":
@@ -245,6 +247,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--require-reviewed", action="store_true", help="completed evidence review is required")
     parser.add_argument("--require-verified", action="store_true", help="verified records are required")
     parser.add_argument("--require-source-locators", action="store_true", help="require every source locator value")
+    parser.add_argument("--require-source-dates", action="store_true", help="require every source accessed_at value")
     args = parser.parse_args(argv)
     ceiling = dt.datetime.now(dt.timezone.utc).date() if args.as_of is None else args.as_of
     seen: set[str] = set()
