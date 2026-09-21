@@ -71,6 +71,7 @@ SCRIPT = r"""
       const record=row.after||row.before;
       if(view==="queue"&&!row.reasons.length)return false;
       if(el("change-filter").value&&row.change!==el("change-filter").value)return false;
+      if(el("publisher-filter").value&&!record.sources.some(source=>source.publisher===el("publisher-filter").value))return false;
       if(el("review-date-filter").value&&(el("review-date-filter").value==="known")!==(record.last_verified_at!==null))return false;
       if(el("stage-filter").value&&record.policy_stage!==el("stage-filter").value)return false;
       if(el("topic-filter").value&&record.topic!==el("topic-filter").value)return false;
@@ -100,7 +101,7 @@ SCRIPT = r"""
     const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)+"\n"],{type:"application/json"}));
     const link=document.createElement("a");link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
-  function options(id,values) {for(const value of [...new Set(values)].sort()){const option=node("option",label(value));option.value=value;el(id).append(option);}}
+  function options(id,values,display=label) {for(const value of [...new Set(values)].sort()){const option=node("option",display(value));option.value=value;el(id).append(option);}}
   try {
     const payload=JSON.parse(el("maintenance-data").textContent);report=payload.report;
     before=report.before_snapshot||null;after=report.after_snapshot||report.snapshot;
@@ -108,6 +109,7 @@ SCRIPT = r"""
     const queue=new Map(report.review_queue.entries.map(entry=>[entry.id,entry.reasons]));
     rows=(report.changes||after.dataset.records.map(r=>({id:r.id,change:"current",field_changes:[],policy_stage_changed:false,verification_status_changed:false}))).map(change=>({...change,before:old.get(change.id)||null,after:current.get(change.id)||null,reasons:queue.get(change.id)||[]}));
     options("change-filter",rows.map(r=>r.change));options("jurisdiction",rows.map(r=>(r.after||r.before).jurisdiction));options("record-type",rows.map(r=>(r.after||r.before).record_type));
+    options("publisher-filter",rows.flatMap(r=>(r.after||r.before).sources.map(source=>source.publisher)),value=>value);
     options("stage-filter",rows.map(r=>(r.after||r.before).policy_stage));
     options("topic-filter",rows.map(r=>(r.after||r.before).topic));
     options("status-filter",rows.map(r=>(r.after||r.before).verification_status));options("reason-filter",Object.keys(report.review_queue.reason_counts));
@@ -145,6 +147,7 @@ def render_report(report: dict) -> str:
 <body><header><div class="kicker">Open Europe Preparedness · Offline maintenance</div><h1>Review what changed.<br>Keep the evidence intact.</h1><p>Compare complete catalog snapshots and prepare human-reviewed corrections using explicit structural triage reasons.</p><p id="context" class="cutoff"></p></header>
 <main><section class="panel filters" aria-label="Maintenance filters"><h2>Focus the review</h2><div id="filters"><label for="search">Search records, evidence and changes</label><input id="search" type="search" maxlength="1000" autocomplete="off" placeholder="Claim, source, field or reason">
 <div class="filter-grid">
+<div><label for="publisher-filter">Source publisher</label><select id="publisher-filter"><option value="">All publishers</option></select></div>
 <div><label for="review-date-filter">Review date</label><select id="review-date-filter"><option value="">Known or missing</option><option value="known">Known review date</option><option value="missing">Missing review date</option></select></div>
 <div><label for="stage-filter">Policy stage</label><select id="stage-filter"><option value="">All stages</option></select></div>
 <div><label for="topic-filter">Topic</label><select id="topic-filter"><option value="">All topics</option></select></div>
