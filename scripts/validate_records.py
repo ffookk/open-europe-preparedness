@@ -239,6 +239,19 @@ def summarize(records: list[dict]) -> dict:
             "record_types": {kind: sum(r["record_type"] == kind for r in records) for kind in ("real", "synthetic")}}
 
 
+def read_input(path: Path, limit: int | None) -> str:
+    size = -1 if limit is None else limit + 1
+    if path == Path("-"):
+        raw = getattr(sys.stdin, "buffer", sys.stdin).read(size)
+    else:
+        with path.open("rb") as stream:
+            raw = stream.read(size)
+    raw = raw.encode("utf-8") if isinstance(raw, str) else raw
+    if limit is not None and len(raw) > limit:
+        raise ValueError("input byte limit exceeded")
+    return raw.decode("utf-8")
+
+
 def parse_count(value: str) -> int:
     if not re.fullmatch(r"[0-9]{1,9}", value):
         raise argparse.ArgumentTypeError("must be a non-negative integer with at most nine digits")
@@ -278,6 +291,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-access-age", type=parse_count, metavar="DAYS", help="maximum accessed_at age; missing dates fail")
     parser.add_argument("--min-records", type=parse_count, default=0, metavar="N", help="minimum combined record count")
     parser.add_argument("--quiet", action="store_true", help="suppress the default PASS banner; requested summaries remain visible")
+    parser.add_argument("--max-input-bytes", type=parse_count, metavar="N", help="maximum UTF-8 bytes per input")
     args = parser.parse_args(argv)
     if args.files.count(Path("-")) > 1:
         parser.error("standard input may be used only once")
@@ -292,10 +306,10 @@ def main(argv: list[str] | None = None) -> int:
         try:
             if path == Path("-") and sys.stdin is None:
                 raise ValueError("standard input is unavailable")
-            document = json.loads(sys.stdin.read() if path == Path("-") else path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys,
+            document = json.loads(read_input(path, args.max_input_bytes), object_pairs_hook=reject_duplicate_keys,
                                   parse_constant=lambda _: (_ for _ in ()).throw(ValueError("non-finite JSON number")))
         except (OSError, UnicodeError, ValueError) as exc:
-            detail = f"invalid JSON at line {exc.lineno}, column {exc.colno}" if isinstance(exc, json.JSONDecodeError) else "cannot read valid UTF-8 JSON (check file access, duplicate keys, and syntax)"
+            detail = f"invalid JSON at line {exc.lineno}, column {exc.colno}" if isinstance(exc, json.JSONDecodeError) else "cannot read valid UTF-8 JSON (check file access, duplicate keys, syntax, and any byte limit)"
             errors.append(f"{label}: {detail}")
             continue
         errors.extend(validate_document(document, label, seen, as_of=ceiling))

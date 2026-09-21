@@ -68,6 +68,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--version` reports the supported schema version and exits without requiring or reading input files.
 
+- `--max-input-bytes N` applies a per-input UTF-8 byte ceiling to files and stdin. Equality passes. Files and binary stdin are read as raw bytes before UTF-8 decoding; text-only stdin streams are measured after UTF-8 encoding. No limit is imposed by default.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

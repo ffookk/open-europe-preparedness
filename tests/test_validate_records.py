@@ -217,6 +217,24 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(0, raised.exception.code)
         self.assertEqual("policy-record-validator (schema 1)\n", output.getvalue())
 
+    def test_input_byte_budget_accepts_boundary_and_rejects_excess(self):
+        self.record["title"] = "synthetic-" + chr(233)
+        size = len(json.dumps(self.document).encode("utf-8"))
+        self.assertEqual(0, self.run_cli("--max-input-bytes", str(size))[0])
+        self.assertEqual(1, self.run_cli("--max-input-bytes", str(size - 1))[0])
+        with mock.patch("sys.stdin", io.StringIO(json.dumps(self.document))), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(1, main(["--max-input-bytes", "1", "-"]))
+
+    def test_raw_byte_limit_counts_crlf_and_multibyte_text(self):
+        self.record["title"] = "synthetic-" + chr(233)
+        raw = json.dumps(self.document, ensure_ascii=False, indent=2).replace("\n", "\r\n").encode("utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "synthetic-crlf.json"
+            path.write_bytes(raw)
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(0, main(["--max-input-bytes", str(len(raw)), str(path)]))
+                self.assertEqual(1, main(["--max-input-bytes", str(len(raw) - 1), str(path)]))
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
