@@ -51,6 +51,7 @@ SCRIPT = r"""
   const names = {policy_stage:"Policy stage",verification_status:"Review status",record_type:"Record type",
     last_verified_at:"Last review",announced_at:"Announcement",adopted_at:"Adoption",effective_at:"Entry into force",target_at:"Target"};
   const label = value => names[value] || value.replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
+  const displayValue = (field, value) => field === "jurisdiction" ? value : label(value);
   const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
   const node = (tag, text, className) => {
     const item = document.createElement(tag);
@@ -111,7 +112,7 @@ SCRIPT = r"""
       const section = node("section"); section.append(node("h3", label(field)));
       const counts = new Map(); records.forEach(r => counts.set(r[field], (counts.get(r[field]) || 0) + 1));
       const values = node("ul");
-      [...counts.keys()].sort((a,b) => compare(a.toLowerCase(),b.toLowerCase()) || compare(a,b)).forEach(value => values.append(node("li", label(value) + ": " + counts.get(value))));
+      [...counts.keys()].sort((a,b) => compare(a.toLowerCase(),b.toLowerCase()) || compare(a,b)).forEach(value => values.append(node("li", displayValue(field, value) + ": " + counts.get(value))));
       if (!counts.size) values.append(node("li", "No matches"));
       section.append(values); grid.append(section);
     });
@@ -166,7 +167,7 @@ SCRIPT = r"""
     payload = JSON.parse(byId("catalog-data").textContent);
     fields.forEach(field => {
       [...new Set(payload.records.map(record => record[field]))].sort((a,b) => compare(a.toLowerCase(),b.toLowerCase()) || compare(a,b)).forEach(value => {
-        const option = node("option", label(value)); option.value = value; byId(field).append(option);
+        const option = node("option", displayValue(field, value)); option.value = value; byId(field).append(option);
       });
     });
     byId("filters").addEventListener("input", refresh);

@@ -413,6 +413,58 @@ class RecordValidationTests(unittest.TestCase):
                     self.assertNotIn(value, stdout.getvalue() + stderr.getvalue())
                     self.assertNotIn(private_input, stdout.getvalue() + stderr.getvalue())
 
+    def test_unknown_arguments_never_echo_option_names_values_or_program_paths(self):
+        marker = "FICTIONAL_PRIVATE_ARGUMENT_MARKER"
+        for args in (["--unknown-option", marker], ["--" + marker], ["--min-sources", marker]):
+            with self.subTest(args=args):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with mock.patch("sys.argv", [marker]), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    with self.assertRaises(SystemExit) as raised:
+                        main(["examples/synthetic.json", *args])
+                self.assertEqual(raised.exception.code, 2)
+                self.assertNotIn(marker, stdout.getvalue() + stderr.getvalue())
+                self.assertIn("invalid command arguments", stderr.getvalue())
+                self.assertEqual(stdout.getvalue(), "")
+
+    def test_idna_aliases_cannot_bypass_reserved_or_local_source_rules(self):
+        self.record.update(id="fictional-real-label", record_type="real")
+        for host in ("example.org\u3002", "\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45.org",
+                     "sub.example\uff0eorg", "office.host\u3002localhost", "office.host\uff0einternal"):
+            with self.subTest(host=host):
+                self.record["sources"][0]["url"] = "https://" + host + "/fictional"
+                errors = validate_document(self.document)
+                self.assertTrue(any(".url:" in error for error in errors))
+                self.assertNotIn(host, "\n".join(errors))
+
+    def test_numeric_and_bracketed_source_hosts_are_not_public_domains(self):
+        self.record.update(id="fictional-real-label", record_type="real")
+        for host in ("127.1", "0x7f.0.0.1", "0177.0.0.1", "127.0.1", "127.1.", "[v1.a]"):
+            with self.subTest(host=host):
+                self.record["sources"][0]["url"] = "https://" + host + "/fictional"
+                self.assertTrue(any(".url:" in error for error in validate_document(self.document)))
+
+    def test_percent_escaped_and_invalid_dns_labels_are_rejected(self):
+        self.record.update(id="fictional-real-label", record_type="real")
+        for host in ("%65xample.org", "%31%32%37.1", "bad_label.fictional.test",
+                     "-label.fictional.test", "label-.fictional.test", "label..fictional.test",
+                     "a" * 64 + ".fictional.test"):
+            with self.subTest(host=host):
+                self.record["sources"][0]["url"] = "https://" + host + "/fictional"
+                self.assertTrue(any(".url:" in error for error in validate_document(self.document)))
+
+    def test_idna_source_aliases_share_domain_counts_without_rewriting_urls(self):
+        self.record["sources"][0]["url"] = "https://example.invalid/a"
+        alias = "https://example\u3002invalid\uff0e/b"
+        self.record["sources"].append({**self.record["sources"][0], "url": alias})
+        self.assertEqual(validate_document(self.document), [])
+        code, output, _ = self.run_cli("--json")
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output)["source_domains"], 1)
+        code, output, error = self.run_cli("--min-source-domains", "2")
+        self.assertEqual(code, 1)
+        self.assertIn("source-domain count is below", error)
+        self.assertEqual(self.record["sources"][1]["url"], alias)
+
     def test_synthetic_records_cannot_be_mistaken_for_real_evidence(self):
         self.record['sources'][0]['url'] = 'https://commission.europa.eu/topics/preparedness_en'
         self.assertTrue(any('synthetic sources must' in e for e in validate_document(self.document)))

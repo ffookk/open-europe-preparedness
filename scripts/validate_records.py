@@ -22,6 +22,23 @@ STAGES = {"unknown", "announced", "proposed", "adopted", "in_force", "implementi
 STATUSES = {"pending", "verified", "disputed", "outdated", "inconclusive"}
 TOPICS = {"reserve_service", "treaty_status", "civil_protection", "household_preparedness", "emergency_stockpiles", "other"}
 SYNTHETIC_HOSTS = {"example.org", "example.invalid"}
+DATE_ARGUMENT_ERROR = "must be a valid calendar date in YYYY-MM-DD format"
+
+
+class SafeArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        # Only this exact fixed diagnostic is safe to retain from argparse.
+        if message != "argument --as-of: " + DATE_ARGUMENT_ERROR:
+            message = "invalid command arguments; use --help for usage"
+        super().error(message)
+
+
+def normalize_source_host(host: str) -> str:
+    """Classify DNS aliases consistently without changing the stored source URL."""
+    normalized = host.encode("idna").decode("ascii").lower().rstrip(".")
+    if len(normalized) > 253 or any(not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", part) for part in normalized.split(".")):
+        raise ValueError("source host must contain valid DNS labels")
+    return normalized
 
 
 def validate_document(document: object, label: str = "document", seen: set[str] | None = None,
@@ -140,9 +157,9 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
                             raise ValueError("source URL contains control characters")
                         parsed = urlsplit(url)
                         host = parsed.hostname
-                        # DNS absolute names may end in a dot; classify the canonical host.
+                        # IDNA maps Unicode DNS separators and compatible character forms.
                         if host is not None:
-                            host = host.rstrip(".")
+                            host = normalize_source_host(host)
                         # Accessing port also detects malformed values such as ':abc'.
                         port = parsed.port
                         private_query_fields = {"token", "accesstoken", "refreshtoken", "apikey", "password", "passwd", "secret", "authorization", "auth", "session", "sessionid", "signature", "sig", "xamzsignature", "xamzcredential", "xamzsecuritytoken"}
@@ -151,6 +168,8 @@ def validate_document(document: object, label: str = "document", seen: set[str] 
                         if host and ("." not in host or host.endswith((".local", ".localhost", ".internal"))):
                             raise ValueError("local source host")
                         if host:
+                            if "[" in parsed.netloc or all(re.fullmatch(r"(?:0x[0-9a-f]+|[0-9]+)", part, re.IGNORECASE) for part in host.split(".")):
+                                raise ValueError("address literals are not document domains")
                             try:
                                 ipaddress.ip_address(host)
                             except ValueError:
@@ -226,7 +245,7 @@ def admission_errors(records: list[dict], args: argparse.Namespace, ceiling: dt.
 
 
 def source_domains(record: dict) -> set[str]:
-    return {urlsplit(source["url"]).hostname.lower().rstrip(".") for source in record["sources"]}
+    return {normalize_source_host(urlsplit(source["url"]).hostname) for source in record["sources"]}
 
 
 def summarize(records: list[dict]) -> dict:
@@ -264,7 +283,7 @@ def parse_count(value: str) -> int:
 
 def parse_as_of(value: str) -> dt.date:
     """Parse a strict ISO date without including supplied content in errors."""
-    message = "must be a valid calendar date in YYYY-MM-DD format"
+    message = DATE_ARGUMENT_ERROR
     if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
         raise argparse.ArgumentTypeError(message)
     try:
@@ -274,7 +293,7 @@ def parse_as_of(value: str) -> dt.date:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = SafeArgumentParser(prog="policy-record-validator", description=__doc__)
     parser.add_argument("--version", action="version", version="policy-record-validator (schema 1)")
     parser.add_argument("files", type=Path, nargs="+", help="JSON record files or one - for stdin; IDs are checked across all inputs")
     parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",

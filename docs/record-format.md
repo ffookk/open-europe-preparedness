@@ -64,7 +64,7 @@ New leads whose sources have not been read use `policy_stage: "unknown"`, `verif
 
 Every source has these fields:
 
-- `url`: An original HTTPS source link without user information, passwords, obvious credential query fields, whitespace or nonstandard ports. Localhost, local domains and IP address literals are prohibited. A trailing DNS dot is removed before checking, so it cannot bypass local-address, IP or reserved-domain restrictions. Ordinary query parameters on official sources may remain. Prefer public government, parliamentary, legal-database and international-organization pages. Manually remove private share codes, tokens, login links and tracking parameters; the CLI cannot recognize all private information.
+- `url`: An original HTTPS source link without user information, passwords, obvious credential query fields, whitespace or nonstandard ports. Localhost, local domains and IP address literals are prohibited. Host classification uses Python's standard-library IDNA normalization, requires valid DNS-label syntax and removes one trailing DNS dot. Percent-escaped hostnames, bracketed authorities and numeric address forms, including shortened, hexadecimal and octal IPv4 spellings, are rejected. This prevents compatible Unicode spellings from bypassing local-address or reserved-domain restrictions. Source-domain counts use the same normalized host while preserving every stored URL. These structural rules do not resolve DNS or claim equivalence with every browser's Unicode-domain processing. Ordinary query parameters on official sources may remain. Prefer public government, parliamentary, legal-database and international-organization pages. Manually remove private share codes, tokens, login links and tracking parameters; the CLI cannot recognize all private information.
 - `publisher` / `title`: Publishing organization and document title. An unreviewed lead must clearly identify its title as a lead label.
 - `published_at`: Original publication date, or `null` if unknown. Do not substitute the access date.
   The CLI does not compare publication and access dates chronologically. Investigate page versions and date meanings when they appear inconsistent.
@@ -75,7 +75,7 @@ Every source has these fields:
 For `verified` records, every source must have complete `locator`, `accessed_at` and `supports` fields. Unreviewed further-reading leads belong in separate `pending` records. Other verification results may retain missing evidence locations to describe genuine verification difficulties, but still require a review date and explanation.
 
 URL validation is not an allowlist of official institutions. Passing HTTPS syntax and domain checks does not establish publisher credibility or evidence quality.
-The CLI does not deduplicate or reject repeated source URLs. Remove duplicate citations during review rather than counting them as independent evidence.
+The CLI never deduplicates source entries. Repeated exact URLs are accepted by default; `--unique-sources` rejects them on request. Remove duplicate citations during review rather than counting them as independent evidence.
 
 ## Synthetic examples, real data and checks
 

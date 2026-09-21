@@ -93,7 +93,7 @@ Reasons retain exact field/source-index paths. Known stale dates include age and
 
 ## Offline report and downloads
 
-The HTML supports full-text search, change/jurisdiction/type/status/reason filters, independent policy-stage and review-status transition filters, sorting, pagination, matched-set reason counts, a queue-only view, before/after evidence details and printing. Status and jurisdiction filters use the after/current record, or the before version for a removal. Sources are displayed as literal text. Keyboard controls have labels and focus indicators; empty and failed display states are explicit. Printing expands the current page only.
+The HTML supports full-text search, change/jurisdiction/type/status/reason filters, independent policy-stage and review-status transition filters, sorting, pagination, matched-set reason counts, a queue-only view, before/after evidence details and printing. Status and jurisdiction filters use the after/current record, or the before version for a removal. Jurisdiction option labels preserve the exact recorded text, including case and underscores. Sources are displayed as literal text. Keyboard controls have labels and focus indicators; empty and failed display states are explicit. Printing expands the current page only.
 
 - **Full review JSON** preserves the complete comparison or review artifact. It can be reverified by `report`.
 - **Before/after snapshot JSON** preserves each complete snapshot and its fingerprints. These can be compared or reviewed again, including after a browser download.

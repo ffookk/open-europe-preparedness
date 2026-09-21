@@ -116,7 +116,7 @@ SCRIPT = r"""
     rows.forEach(row=>row.limitations_changed=row.change==="changed"&&row.field_changes.some(change=>change.path==="/limitations"||change.path.startsWith("/limitations/")));
     rows.forEach(row=>row.source_evidence_changed=row.change==="changed"&&row.field_changes.some(change=>change.path==="/sources"||change.path.startsWith("/sources/")));
     rows.forEach(row=>row.policy_dates_changed=row.change==="changed"&&row.field_changes.some(change=>change.path==="/dates"||change.path.startsWith("/dates/")));
-    options("change-filter",rows.map(r=>r.change));options("jurisdiction",rows.map(r=>(r.after||r.before).jurisdiction));options("record-type",rows.map(r=>(r.after||r.before).record_type));
+    options("change-filter",rows.map(r=>r.change));options("jurisdiction",rows.map(r=>(r.after||r.before).jurisdiction),value=>value);options("record-type",rows.map(r=>(r.after||r.before).record_type));
     options("publisher-filter",rows.flatMap(r=>(r.after||r.before).sources.map(source=>source.publisher)),value=>value);
     options("stage-filter",rows.map(r=>(r.after||r.before).policy_stage));
     options("topic-filter",rows.map(r=>(r.after||r.before).topic));

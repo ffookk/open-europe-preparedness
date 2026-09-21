@@ -55,7 +55,7 @@ python3 -m scripts.catalog html data/verified.json data/pending.json examples/sy
 
 The generator validates the entire batch before writing a self-contained HTML document. Open it directly in a browser; no server, package installation or internet connection is needed. JavaScript runs locally to provide these controls:
 
-- Search all stored text; combine jurisdiction, topic, policy stage, review status and record type filters.
+- Search all stored text; combine jurisdiction, topic, policy stage, review status and record type filters. Jurisdiction options and facet labels retain exact source text, including case and underscores.
 - Choose the date field, inclusive date bounds or known/unknown dates, and a maximum review age. The fixed generation cutoff appears at the top and governs age calculations regardless of the browser clock. Date and age rules match the CLI; unknown dates cannot silently pass a range or age filter.
 - Sort by title, identity, category or date. ID ties stay ascending and unknown dates stay last in either direction. Change page size or move between result pages.
 - Expand each record for its exact claim, scope, review note, policy/review dates, sources, evidence locators, limitations and change history. Source URLs remain plain text so browsing the catalog cannot request them.
