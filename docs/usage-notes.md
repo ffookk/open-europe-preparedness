@@ -28,6 +28,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `source_domains` counts distinct hostnames after case and trailing-dot normalization. It does not list them or imply independent institutions.
 
+- `jurisdictions` counts distinct exact jurisdiction labels. Different spellings remain distinct; labels are not printed.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.

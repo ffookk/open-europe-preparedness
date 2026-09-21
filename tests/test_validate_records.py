@@ -68,6 +68,13 @@ class RecordValidationTests(unittest.TestCase):
         self.assertEqual(1, json.loads(output.split("SUMMARY: ")[1])["source_domains"])
         self.assertNotIn("EXAMPLE.INVALID", output)
 
+    def test_summary_jurisdiction_count_does_not_echo_labels(self):
+        other = copy.deepcopy(self.document)
+        other["records"][0].update(id="synthetic-other", jurisdiction="synthetic-private-jurisdiction")
+        output = self.run_cli("--summary", documents=[self.document, other])[1]
+        self.assertEqual(2, json.loads(output.split("SUMMARY: ")[1])["jurisdictions"])
+        self.assertNotIn("synthetic-private-jurisdiction", output)
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):

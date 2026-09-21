@@ -196,7 +196,8 @@ def source_domains(record: dict) -> set[str]:
 
 def summarize(records: list[dict]) -> dict:
     sources = [source for record in records for source in record["sources"]]
-    return {"source_domains": len(set().union(*(source_domains(record) for record in records))),
+    return {"jurisdictions": len({record["jurisdiction"] for record in records}),
+            "source_domains": len(set().union(*(source_domains(record) for record in records))),
             "sources": {"total": len(sources), **{field: sum(s[field] is not None for s in sources) for field in ("accessed_at", "locator", "supports")}},
             "topics": {value: sum(r["topic"] == value for r in records) for value in sorted(TOPICS)},
             "policy_stages": {value: sum(r["policy_stage"] == value for r in records) for value in sorted(STAGES)},
