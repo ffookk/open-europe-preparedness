@@ -40,6 +40,8 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--require-reviewed` enforces the recorded status: pending records are rejected; other reviewed outcomes remain allowed. It does not certify human review.
 
+- `--require-verified` enforces the recorded status: only verified records are allowed. It does not certify human review.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
