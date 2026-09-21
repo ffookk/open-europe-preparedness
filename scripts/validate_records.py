@@ -258,6 +258,7 @@ def parse_as_of(value: str) -> dt.date:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", action="version", version="policy-record-validator (schema 1)")
     parser.add_argument("files", type=Path, nargs="+", help="JSON record files or one - for stdin; IDs are checked across all inputs")
     parser.add_argument("--as-of", type=parse_as_of, metavar="YYYY-MM-DD",
                         help="inclusive ceiling for review and source access dates (default: current UTC date)")

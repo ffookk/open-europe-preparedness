@@ -210,6 +210,13 @@ class RecordValidationTests(unittest.TestCase):
         self.assertIn("input-1:", error.getvalue())
         self.assertNotIn("Traceback", error.getvalue())
 
+    def test_version_is_available_without_input_files(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), self.assertRaises(SystemExit) as raised:
+            main(["--version"])
+        self.assertEqual(0, raised.exception.code)
+        self.assertEqual("policy-record-validator (schema 1)\n", output.getvalue())
+
     def test_repository_fixtures_pass_together(self):
         seen = set()
         for path in sorted((ROOT / 'data').glob('*.json')) + sorted((ROOT / 'examples').glob('*.json')):
