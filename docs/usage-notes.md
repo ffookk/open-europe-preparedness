@@ -64,10 +64,12 @@ The cutoff does not rewrite records, fetch sources, establish policy truth at th
 
 - `--quiet` suppresses only the normal PASS banner. Requested summaries and validation errors remain visible.
 
+- Standard input can be combined with files and all existing gates; it counts as one ordinal input and is subject to cross-input ID checks.
+
 ## Inputs and diagnostics
 
 - Provide at least one JSON file; omitting files produces a command-line usage error.
-- `-` does not mean standard input. Save the JSON to a file and pass its path.
+- A single `-` operand reads JSON from standard input. Multiple `-` operands are rejected before reading.
 - Directories are not recursively expanded into JSON files. Explicitly list every file to validate together.
 - Do not pass the same file twice. IDs encountered on the second read also trigger duplicate detection across inputs.
 - If one input cannot be read, the CLI still attempts to check later inputs. Any error makes the overall command fail.
