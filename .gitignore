@@ -12,3 +12,4 @@ private-input/
 private-output/
 local-data/
 *.log
+node_modules/

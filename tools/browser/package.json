@@ -1,0 +1,10 @@
+{
+  "name": "preparedness-browser-checks",
+  "private": true,
+  "scripts": {
+    "test": "node check.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
