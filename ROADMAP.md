@@ -29,6 +29,7 @@ Acceptance: 10 real policy records have been reviewed by humans and can be check
 - [x] Cover reviewed proposals, pending leads, missing evidence, invalid dates, synthetic-source misuse and CLI input errors with regression tests.
 - [x] Produce an offline CLI index filterable by jurisdiction, topic, policy stage and evidence review status, with date filters, facets and schema exports.
 - [x] Generate a self-contained offline HTML explorer with evidence details, fixed-cutoff filters and filtered JSON downloads.
+- [x] Commit portable Chromium/Firefox regressions for fictional offline catalog and maintenance pages, with exact JSON export verification and a required aggregate CI check across the Python/platform matrix.
 - [ ] Consider a hosted website once the data and review process are stable.
 
 Acceptance: others can validate the same data using the README commands. The offline CLI index is reproducible and preserves each conclusion's evidence and applicable period. Passing automated checks establishes only compliance with structural rules.
