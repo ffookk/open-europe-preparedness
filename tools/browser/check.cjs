@@ -8,9 +8,12 @@ const {spawnSync} = require("node:child_process");
 const engines = require("playwright");
 let scenario = "setup";
 
-function python(mode, directory) {
-  const result = spawnSync(process.env.PYTHON_BIN || "python3", [path.join(__dirname, "fixtures.py"), mode, directory], {encoding: "utf8"});
+function python(request) {
+  const result = spawnSync("python3", [path.join(__dirname, "fixtures.py")], {
+    encoding: "utf8", input: JSON.stringify(request), maxBuffer: 4 * 1024 * 1024, timeout: 15000
+  });
   assert.equal(result.status, 0, "Fictional fixture generation or Python artifact verification failed.");
+  return JSON.parse(result.stdout);
 }
 
 async function run(engine) {
@@ -19,7 +22,9 @@ async function run(engine) {
   let checks = 0;
   const check = (condition, message) => { assert.ok(condition, message); checks++; };
   try {
-    python("generate", directory);
+    const pages = python({mode: "generate"});
+    await fs.writeFile(path.join(directory, "catalog.html"), pages.catalog_html, {flag: "wx", mode: 0o600});
+    await fs.writeFile(path.join(directory, "maintenance.html"), pages.maintenance_html, {flag: "wx", mode: 0o600});
     browser = await engines[engine].launch({headless: true});
     for (const name of ["catalog", "maintenance"]) {
       scenario = engine + ": " + name;
@@ -107,7 +112,12 @@ async function run(engine) {
       await context.close();
     }
     scenario = engine + ": Python download verification";
-    python("verify", directory);
+    const downloads = {};
+    for (const filename of ["catalog-underscore.json", "catalog-space.json", "catalog-all.json", "catalog-fresh.json",
+      "maintenance-underscore.json", "maintenance-space.json", "maintenance-all.json", "report.json", "before.json", "after.json", "removed.json"]) {
+      downloads[filename] = JSON.parse(await fs.readFile(path.join(directory, filename), "utf8"));
+    }
+    assert.deepEqual(python({mode: "verify", downloads}), {verified_exports: 11});
     console.log(JSON.stringify({engine, version: browser.version(), checks, verified_exports: 11, fixtures: "fictional", external_requests: 0}));
   } finally {
     if (browser) await browser.close();

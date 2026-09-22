@@ -11,7 +11,7 @@ npx --no-install playwright install chromium firefox
 npm test
 ```
 
-Dependency and browser installation require network access. On a supported Linux host, use `playwright install --with-deps chromium firefox` to install browser system requirements too. The lockfile pins Playwright and its core to `1.63.0`; these are development tools only. The Python runtime remains standard-library-only. Set `PYTHON_BIN` to an alternate Python executable when necessary. `npm test -- chromium` or `npm test -- firefox` runs one engine for diagnosis; normal CI requires both.
+Dependency and browser installation require network access. On a supported Linux host, use `playwright install --with-deps chromium firefox` to install browser system requirements too. The lockfile pins Playwright and its core to `1.63.0`; these are development tools only. The Python runtime remains standard-library-only. The runner uses `python3` from `PATH`. `npm test -- chromium` or `npm test -- firefox` runs one engine for diagnosis; normal CI requires both.
 
 The actual page checks run in isolated offline browser contexts, abort unexpected network routes, and fail on external request attempts, page exceptions or dialogs. They cover:
 
@@ -23,7 +23,7 @@ The actual page checks run in isolated offline browser contexts, abort unexpecte
 - Full report and snapshot downloads, rechecked through their recomputing Python verifiers; removed-record packets retain before evidence and an absent after record.
 - Literal hostile record text, no active injected image, no browser storage, and a narrow viewport without horizontal overflow.
 
-Generated fixtures and downloads use an isolated temporary directory that is removed on completion. Failures print a fixed scenario name without record content or machine paths. CI does not upload screenshots, downloads or separate artifact bundles. GitHub still retains its normal workflow logs.
+Generated fixtures and downloads use an isolated temporary directory that is removed on completion. The Node parent manages fixed filenames; the Python helper exchanges bounded JSON over standard input/output, accepts no directory or command-line inputs, and independently rebuilds expected artifacts when verifying downloads. Failures print a fixed scenario name without record content or machine paths. CI does not upload screenshots, downloads or separate artifact bundles. GitHub still retains its normal workflow logs.
 
 CI runs the Python suite, privacy guard, English policy and documented dataset validation on Ubuntu with Python 3.10, 3.11, 3.12, 3.13 and 3.14, plus macOS with Python 3.14. A separate Ubuntu/Python 3.11/Node.js 24 job runs both browser engines. The existing required check named `validate` always runs and fails unless both prerequisite jobs succeed, including every matrix entry.
 
