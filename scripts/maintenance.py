@@ -6,7 +6,9 @@ import datetime as dt
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
+import stat
 import sys
 
 from .catalog import (ArgumentError, Catalog, CatalogError, SafeParser, load_catalog,
@@ -243,14 +245,28 @@ def read_artifact(path) -> dict:
             raise ValueError
         return int(value)
     try:
-        with Path(path).open("rb") as source:
-            raw = source.read(MAX_ARTIFACT_BYTES + 1)
+        # Preserve read-only links to regular inputs, but never wait for a FIFO
+        # writer. Inspect the opened descriptor before reading any payload.
+        flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
+        descriptor = os.open(Path(path), flags)
+        try:
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode):
+                raise CatalogError("Artifact input must be a regular JSON file.")
+            if metadata.st_size > MAX_ARTIFACT_BYTES:
+                raise CatalogError("An artifact exceeds the 32 MiB input limit.")
+            with os.fdopen(descriptor, "rb") as source:
+                descriptor = None  # The stream now owns and closes the descriptor.
+                raw = source.read(MAX_ARTIFACT_BYTES + 1)
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
         if len(raw) > MAX_ARTIFACT_BYTES:
             raise CatalogError("An artifact exceeds the 32 MiB input limit.")
         return json.loads(raw.decode("utf-8"), object_pairs_hook=reject_duplicate_keys, parse_float=number, parse_int=integer, parse_constant=constant)
     except CatalogError:
         raise
-    except (OSError, ValueError, RecursionError, UnicodeError):
+    except (OSError, TypeError, ValueError, RecursionError, UnicodeError):
         raise CatalogError("Unable to read an artifact as bounded strict UTF-8 JSON.") from None
 
 
