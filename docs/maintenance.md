@@ -111,6 +111,8 @@ All requested destinations are preflighted before writing. JSON and HTML are sep
 
 Catalog inputs retain the existing limits: at most 16 files, 8 MiB per file and 10000 records. Each imported or exported maintenance artifact, including HTML, is limited to 32 MiB; large pairs can exceed the report limit even when each snapshot fits individually. Strict UTF-8 JSON decoding rejects duplicate keys, nonfinite numbers and excessively deep malformed input. Diagnostics omit raw values and paths. Only explicit input files and necessary output-directory metadata are accessed.
 
+Imported maintenance artifacts must be regular JSON files. On POSIX systems, the loader opens a descriptor in nonblocking mode and checks its file type before reading payload bytes, so named pipes do not wait for a writer. Directories and device files are also rejected with a fixed diagnostic. Read-only symbolic links and hard links to regular input files retain their existing behavior; the stricter no-link rules above apply to output destinations. The byte cap is checked before and after reading. These checks are not a wall-clock timeout for arbitrary filesystem I/O.
+
 Exit code 0 means completion, 1 means input/validation/output failure, and 2 means malformed arguments. Run `python3 -m scripts.maintenance --help` for command help. Existing validator and catalog defaults are unchanged.
 
 ## Additional report controls
