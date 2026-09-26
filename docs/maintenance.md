@@ -126,3 +126,7 @@ Exit code 0 means completion, 1 means input/validation/output failure, and 2 mea
 - **Expand/collapse visible evidence:** open or close record details on the current page only; changing pages renders fresh cards.
 - **Matched change counts:** inspect added, removed, changed and unchanged totals before pagination; review-only reports show current records.
 - **Download matched after/current records:** export complete matched current records across all pages as a schema dataset, excluding removals. The control is disabled when no current records match; this dataset is not a snapshot and carries no snapshot fingerprint.
+
+## Resolve explicit local proposals
+
+Use the [offline resolution workflow](resolution.md) when the queue should lead to a reproducible candidate collection. It binds pending decision rows to the exact source snapshot and queue context, requires explicit keep/remove/replace choices, checks complete resulting records, and saves one private bundle with all before/after evidence and rationale. Its candidate snapshot and standard comparison exports work with the commands above. A `maintenance_selection` download remains a review aid and is not accepted as a resolution packet; prepare a packet from the complete source snapshot instead.
