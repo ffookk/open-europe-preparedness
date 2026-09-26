@@ -7,7 +7,7 @@ import sys
 
 from .catalog import ArgumentError, CatalogError, SafeParser, parse_date, parse_number
 from .maintenance import (
-    VERSION, _date, _hashed, _keys, canonical, compare_snapshots, encode_artifact,
+    REASONS, VERSION, _date, _hashed, _keys, canonical, compare_snapshots, encode_artifact,
     fingerprint, make_snapshot, read_artifact, review_queue, verify_snapshot,
 )
 from .private_files import preflight_outputs, write_private_bytes
@@ -22,6 +22,14 @@ LIMITATIONS = [
     "Keep preserves a record without approving it; remove means absence from a candidate, never policy repeal.",
     "Replacement fields are supplied explicitly. No review status, date, evidence or history is promoted automatically.",
     "Full records and rationale remain in private artifacts. These outputs are not redacted or safe to publish automatically.",
+]
+SUMMARY_POLICY = "catalog_resolution_summary_v1"
+SUMMARY_LIMITATIONS = [
+    "This summary contains structural counts only, not source research, factual certification or human approval.",
+    "Aggregate counts can still identify small or known collections. This summary is not anonymized or automatically safe to publish.",
+    "The originating resolution was replayed before export, but this summary omits identities and cannot authenticate or identify its source.",
+    "Preparation and candidate queue counts use their stored cutoffs. A changed cutoff can change age-related reasons without record edits.",
+    "Reason counts can overlap. Transition counts cover records present in both snapshots; removals do not imply repeal.",
 ]
 
 
@@ -161,6 +169,37 @@ def verify_resolution(result):
 def export_resolution(result, *, kind):
     checked = verify_resolution(result)
     comparison = checked["comparison"]
+    if kind == "summary":
+        before = comparison["before_snapshot"]["dataset"]["records"]
+        after = comparison["after_snapshot"]["dataset"]["records"]
+        old_queue = checked["packet"]["basis"]["review_queue"]
+        new_queue = comparison["review_queue"]
+
+        def scope(records):
+            return {record_type: sum(record["record_type"] == record_type for record in records)
+                    for record_type in ("real", "synthetic")}
+
+        def queue_counts(queue):
+            return {"queued_records": queue["queued_count"],
+                    "reason_counts": {reason: queue["reason_counts"][reason] for reason in REASONS}}
+
+        # Construct a closed projection. Never copy a whole user-derived mapping,
+        # identifier, digest, date, rationale or arbitrary change path.
+        return {
+            "schema_version": VERSION, "artifact_type": "catalog_resolution_summary",
+            "summary_policy": SUMMARY_POLICY,
+            "record_counts": {"before": len(before), "after": len(after)},
+            "record_types": {"before": scope(before), "after": scope(after)},
+            "decision_counts": {action: checked["decision_counts"][action]
+                                for action in ("keep", "remove", "replace", "untouched")},
+            "change_counts": {change: comparison["counts"][change]
+                              for change in ("added", "removed", "changed", "unchanged")},
+            "transition_counts": {field: sum(row[field + "_changed"] for row in comparison["changes"])
+                                  for field in ("policy_stage", "verification_status")},
+            "review_queue": {"before": queue_counts(old_queue), "after": queue_counts(new_queue)},
+            "queue_cutoff_changed": old_queue["as_of"] != new_queue["as_of"],
+            "limitations": list(SUMMARY_LIMITATIONS),
+        }
     if kind == "snapshot":
         return comparison["after_snapshot"]
     if kind == "comparison":
@@ -191,9 +230,9 @@ def build_parser():
         command.add_argument("--as-of", type=parse_date, required=True, help="Explicit candidate validation cutoff.")
         if name == "resolve":
             command.add_argument("--output", default="private-output/resolution.json")
-    export = commands.add_parser("export", help="Reverify a resolution and export one new candidate artifact.")
+    export = commands.add_parser("export", help="Reverify a resolution and export one new candidate or reduced-content summary.")
     export.add_argument("resolution")
-    export.add_argument("--kind", choices=("snapshot", "dataset", "comparison"), required=True)
+    export.add_argument("--kind", choices=("snapshot", "dataset", "comparison", "summary"), required=True)
     export.add_argument("--output", required=True)
     return parser
 

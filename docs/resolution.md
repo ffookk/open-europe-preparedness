@@ -91,6 +91,32 @@ The candidate snapshot can enter later maintenance/review cycles. The dataset is
 
 An empty source or an empty queue is valid and produces a no-op proposal when no decisions are required. Removing every selected record can produce an empty candidate snapshot and comparison. Empty `dataset` export is refused because the existing standalone dataset schema requires at least one record. Export a snapshot for that case; the schema is unchanged.
 
+## Export a reduced-content structural summary
+
+When a review-progress record does not need full evidence, export a summary to a new private file:
+
+```sh
+python3 -m scripts.resolution export private-output/fictional-resolution.json \
+  --kind summary --output private-output/fictional-resolution-summary.json
+```
+
+This command still reconstructs and verifies the **entire resolution bundle first**, including fields that the summary will omit. A stale or altered rationale, record, queue or aggregate cannot bypass validation by choosing a smaller export. The original input and 32 MiB artifact limits still apply.
+
+The summary has `artifact_type: catalog_resolution_summary` and policy `catalog_resolution_summary_v1`. Its output schema is a fixed projection containing only structural counts, one cutoff-change boolean and fixed explanatory text:
+
+| Field | Meaning |
+|---|---|
+| `record_counts`, `record_types` | Before/after totals and counts of the stored real/synthetic labels; these do not authenticate records. |
+| `decision_counts` | Supplied keep/remove/replace actions and untouched records. |
+| `change_counts` | Actual added/removed/changed/unchanged records; an identical replacement is unchanged. |
+| `transition_counts` | Counts of policy-stage and verification-status changes among IDs present in both snapshots. Removed records do not count as transitions. |
+| `review_queue` | Preparation and candidate queued-record totals plus counts for each fixed structural reason code. Reason counts can overlap and source-level reasons can occur more than once per record. |
+| `queue_cutoff_changed` | Whether the preparation queue and candidate queue use different cutoffs. This compares the two queue contexts, not the source snapshot's validation date. |
+
+No record IDs, hashes, rationale, names, claims, URLs, file paths, dates, dynamic field paths or other supplied text are copied. Calendar dates and configured age limits are intentionally omitted. A changed queue cutoff can introduce stale reasons without any record edit; fewer reasons do not prove better evidence or completed human review. Keeping a queued record leaves its structural reasons intact.
+
+**Reduced content is not anonymization.** Counts can still identify small or known collections, and this artifact is not automatically safe to publish. The same private writer and no-overwrite rules apply. Keep the full resolution privately when detailed evidence or reproducibility matters. Different original records can intentionally produce identical summaries: the summary contains no source identity, cannot authenticate its origin and cannot be imported as a resolution, snapshot or dataset. It supports reviewing counts, not approving evidence or certifying that a human reviewed it.
+
 ## Content binding and trust boundary
 
 The immutable `basis` contains the exact source snapshot and dataset hashes, scope, complete fixed queue context, sorted targets, original record hashes and full selected before records. Its hash covers that entire basis. Check/resolve reverify the separately supplied source snapshot and recreate the expected basis. Altered records, stale source/cutoff hashes, omitted targets, changed reasons or forged summary counts are rejected even if someone recomputes the basis hash. Missing, duplicate, unknown or unselected decision IDs are rejected. Input decision order is normalized by ID for deterministic results.
