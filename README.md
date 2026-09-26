@@ -70,6 +70,8 @@ Read the [complete maintenance workflow](docs/maintenance.md) for snapshot compa
 
 For explicit corrections, the [offline resolution workflow](docs/resolution.md) prepares content-bound decision packets, validates keep/remove/replace proposals against a supplied source snapshot, and writes a separate candidate with complete before/after evidence. Unresolved decisions and stale source bindings are rejected. No original records or review statuses are changed automatically.
 
+Its `export --kind summary` option revalidates the full resolution and creates a private structural-count summary without record text, identifiers, hashes or rationale. Counts remain potentially identifying; the summary does not authenticate its source or certify human review.
+
 
 ## Project goals
 
