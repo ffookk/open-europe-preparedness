@@ -68,6 +68,9 @@ python3 -m scripts.maintenance review private-output/catalog-before.json --as-of
 
 Read the [complete maintenance workflow](docs/maintenance.md) for snapshot comparison, reason codes, offline reports and output limits. Hashes check consistency, not authenticity; removal means absence from a supplied snapshot, never repeal. No policy facts or review statuses are updated automatically.
 
+For explicit corrections, the [offline resolution workflow](docs/resolution.md) prepares content-bound decision packets, validates keep/remove/replace proposals against a supplied source snapshot, and writes a separate candidate with complete before/after evidence. Unresolved decisions and stale source bindings are rejected. No original records or review statuses are changed automatically.
+
+
 ## Project goals
 
 - Create structured records for independently verifiable policy claims.
